@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 1 Olympiad Master - 500 Fresh Questions Portal</title>
+<style>
+  :root {
+    --math: #2563eb;
+    --science: #16a34a;
+    --english: #9333ea;
+    --gk: #ea580c;
+    --reasoning: #4f46e5;
+  }
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { background: #f1f5f9; margin: 0; padding: 15px; display: flex; justify-content: center; }
+  .app-container { background: #ffffff; max-width: 860px; width: 100%; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+  
+  header { text-align: center; margin-bottom: 16px; }
+  header h1 { margin: 0 0 6px 0; font-size: 1.55rem; color: #0f172a; }
+  header p { margin: 0; color: #64748b; font-size: 0.95rem; }
+
+  /* Subject Selection Tabs */
+  .subject-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 18px; }
+  .sub-btn { border: 2px solid #e2e8f0; background: #f8fafc; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: #475569; cursor: pointer; transition: 0.2s; text-align: center; }
+  .sub-btn:hover { background: #ffffff; }
+  .sub-btn.active[data-sub="math"] { background: #eff6ff; border-color: var(--math); color: var(--math); }
+  .sub-btn.active[data-sub="science"] { background: #f0fdf4; border-color: var(--science); color: var(--science); }
+  .sub-btn.active[data-sub="english"] { background: #faf5ff; border-color: var(--english); color: var(--english); }
+  .sub-btn.active[data-sub="gk"] { background: #fff7ed; border-color: var(--gk); color: var(--gk); }
+  .sub-btn.active[data-sub="reasoning"] { background: #eef2ff; border-color: var(--reasoning); color: var(--reasoning); }
+
+  /* Progress Card */
+  .progress-card { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.92rem; }
+  .progress-card .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: bold; }
+  .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.3s; }
+
+  /* 1-100 Question Grid */
+  .grid-container { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 18px; max-height: 140px; overflow-y: auto; padding: 8px; background: #f8fafc; border-radius: 10px; border: 1.5px solid #e2e8f0; }
+  .q-btn { width: 33px; height: 33px; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #ffffff; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: 0.1s; }
+  .q-btn.active { border-color: #0f172a; background: #0f172a; color: white; }
+  .q-btn.correct { background: #16a34a !important; color: white !important; border-color: #15803d !important; }
+  .q-btn.wrong { background: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+
+  /* Question Area */
+  .topic-tag { display: inline-block; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; background: #e2e8f0; color: #334155; }
+  .question-box { background: #f8fafc; border-radius: 12px; padding: 18px; min-height: 85px; font-size: 1.15rem; font-weight: 600; color: #1e293b; margin-bottom: 18px; line-height: 1.5; border-left: 5px solid #0f172a; }
+
+  /* Options */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 520px) { .options-grid { grid-template-columns: 1fr; } }
+  .opt-btn { padding: 14px 16px; font-size: 1.05rem; font-weight: 600; border: 2px solid #cbd5e1; border-radius: 10px; background: white; cursor: pointer; text-align: left; transition: 0.15s; }
+  .opt-btn:hover:not(:disabled) { border-color: #0f172a; background: #f8fafc; }
+  .opt-btn.correct-opt { background: #16a34a !important; color: white !important; border-color: #15803d !important; }
+  .opt-btn.wrong-opt { background: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+
+  /* Feedback */
+  .feedback-box { padding: 14px 18px; border-radius: 10px; font-size: 0.96rem; margin-bottom: 18px; display: none; line-height: 1.5; }
+  .feedback-box.show { display: block; }
+
+  /* Navigation & Controls */
+  .nav-buttons { display: flex; justify-content: space-between; gap: 10px; }
+  .nav-btn { padding: 10px 22px; font-size: 1rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; background: #0f172a; color: white; transition: 0.15s; }
+  .nav-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+  .footer-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px; }
+  .score-badge { font-size: 1.05rem; font-weight: bold; color: #0f172a; }
+  .btn-small { border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.88rem; }
+  .btn-reset { background: #ef4444; color: white; }
+  .btn-clear-all { background: #64748b; color: white; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <h1>🏆 Class 1 Olympiad Master (Set B - 500 Fresh Questions) 🏆</h1>
+    <p>100 Brand New Questions in Each Subject • No Repetitions</p>
+  </header>
+
+  <div class="subject-tabs">
+    <button class="sub-btn active" data-sub="math" onclick="switchSubject('math')">📐 Maths (100)</button>
+    <button class="sub-btn" data-sub="science" onclick="switchSubject('science')">🔬 Science (100)</button>
+    <button class="sub-btn" data-sub="english" onclick="switchSubject('english')">📖 English (100)</button>
+    <button class="sub-btn" data-sub="gk" onclick="switchSubject('gk')">🌍 GK (100)</button>
+    <button class="sub-btn" data-sub="reasoning" onclick="switchSubject('reasoning')">🧠 Reasoning (100)</button>
+  </div>
+
+  <div class="progress-card">
+    <div class="top-row">
+      <span id="subjectName">Maths</span>
+      <span id="subjectScoreText">Score: 0 / 100</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem; color:#475569;">
+      <span>Overall Portal Progress</span>
+      <span id="overallPercentage">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="overallBar"></div>
+    </div>
+  </div>
+
+  <!-- 1-100 Number Palette -->
+  <div class="grid-container" id="navGrid"></div>
+
+  <div><span class="topic-tag" id="topicBadge">Topic</span></div>
+  <div class="question-box" id="questionText">Loading...</div>
+  <div class="options-grid" id="optionsContainer"></div>
+  <div class="feedback-box" id="feedback"></div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" id="prevBtn" onclick="prevQ()">⬅ Previous</button>
+    <button class="nav-btn" id="nextBtn" onclick="nextQ()">Next ➡</button>
+  </div>
+
+  <div class="footer-bar">
+    <div class="score-badge" id="footerScore">Score: 0 / 100</div>
+    <div>
+      <button class="btn-small btn-reset" onclick="resetCurrentSubject()">🔄 Reset Subject</button>
+      <button class="btn-small btn-clear-all" onclick="resetAllData()">⚠️ Reset All 500</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Structure: [Topic, Question, [Opts], Answer, Explanation]
+const Q_MATH = [
+  ["Number Sense","How many ones are there in 65?",["5","6","60","65"],"5","इकाई (ones) स्थान पर 5 है।"],
+  ["Number Sense","Which number comes exactly between 499 and 501?",["498","500","502","510"],"500","499 और 501 के बीच 500 आता है।"],
+  ["Number Sense","Smallest 2-digit odd number is:",["10","11","13","99"],"11","10 सम है, अतः सबसे छोटी 2-अंकों की विषम संख्या 11 है।"],
+  ["Number Sense","What is the sum of place values of 4 in 444?",["4","44","444","440"],"444","400 + 40 + 4 = 444."],
+  ["Number Sense","Roman numeral for 10 is:",["V","X","L","C"],"X","रोमन में 10 को 'X' लिखते हैं।"],
+  ["Number Sense","How many hundreds are there in 800?",["8","80","800","0"],"8","800 में कुल 8 सैकड़ों (hundreds) होते हैं।"],
+  ["Number Sense","Number name of 670 is:",["Six hundred seven","Six hundred seventeen","Six hundred seventy","Sixty seven"],"Six hundred seventy","670 = Six hundred seventy."],
+  ["Number Sense","Which of these is less than 310?",["309","311","315","400"],"309","309, 310 से छोटा है।"],
+  ["Number Sense","Count backwards by 2s: 18, 16, 14, ___",["13","12","11","10"],"12","14 - 2 = 12."],
+  ["Number Sense","How many tens make 100?",["5","10","20","100"],"10","10 × 10 = 100."],
+  ["Number Sense","One half of 16 is:",["4","6","8","10"],"8","16 ÷ 2 = 8."],
+  ["Number Sense","Number of zeros in One Thousand:",["1","2","3","4"],"3","1000 में 3 शून्य होते हैं।"],
+  ["Number Sense","Which is the greatest 2-digit even number?",["98","99","100","96"],"98","99 विषम है, अतः 98 सबसे बड़ी 2-अंकों की सम संख्या है।"],
+  ["Number Sense","Place value of 0 in 709 is:",["0","10","70","100"],"0","0 का स्थानीय मान हमेशा 0 ही होता है।"],
+  ["Number Sense","What is 10 more than 89?",["98","99","100","79"],"99","89 + 10 = 99."],
+  ["Addition & Subtraction","72 + 18 = ?",["80","88","90","92"],"90","72 + 18 = 90."],
+  ["Addition & Subtraction","63 - 27 = ?",["36","46","34","44"],"36","63 - 27 = 36."],
+  ["Addition & Subtraction","Double of 15 is:",["25","30","35","40"],"30","15 + 15 = 30."],
+  ["Addition & Subtraction","What number subtracted from 80 gives 50?",["20","30","40","50"],"30","80 - 50 = 30."],
+  ["Addition & Subtraction","300 + 70 + 9 = ?",["379","3079","3709","397"],"379","तीनों को जोड़ने पर 379 मिलता है।"],
+  ["Addition & Subtraction","There are 45 red pens and 35 blue pens. Total pens?",["70","75","80","85"],"80","45 + 35 = 80 pens."],
+  ["Addition & Subtraction","A book has 96 pages. Rohan read 48. Pages left?",["46","48","52","58"],"48","96 - 48 = 48 pages."],
+  ["Addition & Subtraction","50 + 50 + 50 = ?",["100","150","200","250"],"150","50 × 3 = 150."],
+  ["Addition & Subtraction","Difference between 100 and 1:",["90","98","99","101"],"99","100 - 1 = 99."],
+  ["Addition & Subtraction","Add 25 to the smallest 3-digit number:",["105","125","150","175"],"125","100 + 25 = 125."],
+  ["Addition & Subtraction","Which pair adds up to 50?",["20 + 20","25 + 25","30 + 30","15 + 25"],"25 + 25","25 + 25 = 50."],
+  ["Addition & Subtraction","If 40 + X = 95, then X is:",["45","50","55","65"],"55","95 - 40 = 55."],
+  ["Addition & Subtraction","Rahul had 84 stamps. He gave 19 to his sister. Left?",["65","75","63","73"],"65","84 - 19 = 65."],
+  ["Addition & Subtraction","10 less than 400 is:",["380","390","399","410"],"390","400 - 10 = 390."],
+  ["Addition & Subtraction","Sum of 25, 15 and 10 is:",["40","45","50","60"],"50","25 + 15 + 10 = 50."],
+  ["Addition & Subtraction","Take away 14 from 60:",["44","46","56","54"],"46","60 - 14 = 46."],
+  ["Addition & Subtraction","80 tens - 30 tens = ___ tens",["40","50","500","110"],"50","80 - 30 = 50 tens."],
+  ["Addition & Subtraction","Which is greater: 45 + 15 or 30 + 25?",["45 + 15","30 + 25","Both equal","Cannot say"],"45 + 15","60 > 55, अतः 45 + 15 बड़ा है।"],
+  ["Addition & Subtraction","A box had 60 apples. 15 were bad. Good apples?",["40","45","50","55"],"45","60 - 15 = 45."],
+  ["Addition & Subtraction","Add 0 to 789. Result is:",["0","789","7890","1"],"789","किसी भी संख्या में 0 जोड़ने पर वही संख्या रहती है।"],
+  ["Multiplication & Division","5 × 7 = ?",["30","35","40","45"],"35","5 × 7 = 35."],
+  ["Multiplication & Division","Divide 24 by 4:",["4","5","6","8"],"6","24 ÷ 4 = 6."],
+  ["Multiplication & Division","A cat has 4 legs. How many legs do 6 cats have?",["20","22","24","28"],"24","6 × 4 = 24 legs."],
+  ["Multiplication & Division","8 × 5 = ?",["35","40","45","48"],"40","8 × 5 = 40."],
+  ["Multiplication & Division","15 ÷ 3 = ?",["3","4","5","6"],"5","15 ÷ 3 = 5."],
+  ["Multiplication & Division","Any number divided by itself (except 0) gives:",["0","1","The number","10"],"1","जैसे 5 ÷ 5 = 1."],
+  ["Multiplication & Division","7 groups of 4 = ?",["24","28","32","36"],"28","7 × 4 = 28."],
+  ["Multiplication & Division","There are 30 candies. Shared equally by 5 kids:",["5","6","7","8"],"6","30 ÷ 5 = 6."],
+  ["Multiplication & Division","3 × 3 × 3 = ?",["9","18","27","30"],"27","3 × 3 = 9; 9 × 3 = 27."],
+  ["Multiplication & Division","Which number multiplied by 6 gives 42?",["6","7","8","9"],"7","7 × 6 = 42."],
+  ["Multiplication & Division","9 × 4 = ?",["32","34","36","38"],"36","9 × 4 = 36."],
+  ["Multiplication & Division","0 ÷ 8 = ?",["0","1","8","Cannot divide"],"0","0 को किसी भी संख्या से भाग दें, 0 ही आता है।"],
+  ["Multiplication & Division","A week has 7 days. How many days in 4 weeks?",["21","24","28","30"],"28","4 × 7 = 28 days."],
+  ["Multiplication & Division","10 × 10 = ?",["10","20","100","1000"],"100","10 × 10 = 100."],
+  ["Multiplication & Division","40 ÷ 10 = ?",["2","4","10","40"],"4","40 ÷ 10 = 4."],
+  ["Money","Value of four ₹5 coins is:",["₹15","₹20","₹25","₹30"],"₹20","4 × 5 = ₹20."],
+  ["Money","How many ₹10 notes make ₹50?",["4","5","6","10"],"5","50 ÷ 10 = 5 notes."],
+  ["Money","If a pencil costs ₹4, cost of 5 pencils?",["₹15","₹20","₹25","₹9"],"₹20","5 × 4 = ₹20."],
+  ["Money","₹100 - ₹45 = ?",["₹45","₹55","₹65","₹75"],"₹55","100 - 45 = ₹55."],
+  ["Money","How many 25-paise coins make ₹1?",["2","4","5","10"],"4","25p × 4 = 100p = ₹1."],
+  ["Money","Sonu bought a ball for ₹30 and bat for ₹70. Total?",["₹90","₹100","₹110","₹120"],"₹100","30 + 70 = ₹100."],
+  ["Money","Symbol of Indian Rupee is:",["$","€","₹","£"],"₹","भारतीय रुपये का प्रतीक ₹ है।"],
+  ["Money","Which is more: Two ₹20 notes or One ₹50 note?",["Two ₹20 notes","One ₹50 note","Both equal","None"],"One ₹50 note","₹50 > ₹40."],
+  ["Money","₹18.00 means:",["18 paise","18 rupees","180 rupees","1 rupee 8 paise"],"18 rupees","दशमलव के बाद 00 है, अतः 18 रुपये।"],
+  ["Money","Cost of notebook is ₹28. Given ₹50. Change returned?",["₹12","₹22","₹32","₹28"],"₹22","50 - 28 = ₹22."],
+  ["Measurement","Half a metre = ___ cm.",["25","50","75","100"],"50","100 cm का आधा = 50 cm."],
+  ["Measurement","To measure height of a room, which unit is best?",["Centimetre","Metre","Gram","Litre"],"Metre","कमरे की ऊंचाई मीटर (m) में नापते हैं।"],
+  ["Measurement","How many grams are there in half a kilogram?",["250 g","500 g","750 g","1000 g"],"500 g","1000 g का आधा = 500 g."],
+  ["Measurement","Which is heavier: 3 kg or 2500 g?",["3 kg","2500 g","Both equal","Cannot say"],"3 kg","3 kg = 3000 g > 2500 g."],
+  ["Measurement","Quantity of medicine in a small eye-dropper is measured in:",["Litres (L)","Millilitres (mL)","Metres","Grams"],"Millilitres (mL)","कम मात्रा के तरल को mL में नापते हैं।"],
+  ["Measurement","Length of a pencil is about:",["15 metres","15 centimetres","15 kilometres","15 millimetres"],"15 centimetres","पेंसिल लगभग 15 cm लंबी होती है।"],
+  ["Measurement","2 L + 3 L = ___ mL.",["500 mL","5000 mL","50 mL","5 mL"],"5000 mL","5 L = 5000 mL."],
+  ["Measurement","A tail of a lizard is measured in:",["Centimetres","Kilometres","Litres","Kilograms"],"Centimetres","छिपकली की पूंछ cm में नापते हैं।"],
+  ["Measurement","Weight of a heavy school desk is measured in:",["Grams","Kilograms","Litres","Centimetres"],"Kilograms","भारी वस्तुएं kg में नापते हैं।"],
+  ["Measurement","How many 500 mL mugs make 2 Litres?",["2","3","4","5"],"4","500 mL × 4 = 2000 mL = 2 L."],
+  ["Time & Calendar","How many seconds are there in 1 minute?",["30","60","100","12"],"60","1 मिनट में 60 सेकंड होते हैं।"],
+  ["Time & Calendar","Short hand on a clock shows:",["Minutes","Hours","Seconds","Days"],"Hours","छोटी सुई घंटा (Hour) दिखाती है।"],
+  ["Time & Calendar","Quarter past 7 means:",["7:15","7:30","7:45","8:15"],"7:15","Quarter past = 15 मिनट (7:15)."],
+  ["Time & Calendar","Which day comes after Thursday?",["Wednesday","Friday","Saturday","Tuesday"],"Friday","गुरुवार के बाद शुक्रवार आता है।"],
+  ["Time & Calendar","First month of the year is:",["December","January","March","April"],"January","साल का पहला महीना जनवरी है।"],
+  ["Time & Calendar","Last month of the year is:",["October","November","December","January"],"December","साल का अंतिम महीना दिसंबर है।"],
+  ["Time & Calendar","How many days are in the month of April?",["28","29","30","31"],"30","अप्रैल में 30 दिन होते हैं।"],
+  ["Time & Calendar","If 1st January is Sunday, what is 8th January?",["Saturday","Sunday","Monday","Tuesday"],"Sunday","7 दिन जोड़ने पर वही दिन आता है: 1 + 7 = 8 (Sunday)."],
+  ["Time & Calendar","Time between 12 midnight and 12 noon is called:",["p.m.","a.m.","o'clock","hours"],"a.m.","मध्यरात्रि से दोपहर तक a.m. होता है।"],
+  ["Time & Calendar","How many weeks are there in 1 normal year?",["48","50","52","54"],"52","1 साल में लगभग 52 सप्ताह होते हैं।"],
+  ["Shapes & Geometry","A circle has how many corners?",["0","1","2","3"],"0","वृत्त में कोई कोना नहीं होता।"],
+  ["Shapes & Geometry","A book has the shape of a:",["Cube","Cuboid","Cone","Cylinder"],"Cuboid","किताब घनाभ (Cuboid) के आकार की होती है।"],
+  ["Shapes & Geometry","How many faces does a sphere (ball) have?",["1 curved face","2 flat faces","6 flat faces","0 faces"],"1 curved face","गेंद में केवल 1 वक्र सतह (curved face) होती है।"],
+  ["Shapes & Geometry","A triangle with all 3 sides equal is called:",["Equilateral","Square","Rectangle","Circle"],"Equilateral","समबाहु त्रिभुज (Equilateral triangle)."],
+  ["Shapes & Geometry","How many corners does a cuboid have?",["4","6","8","12"],"8","घनाभ में 8 कोने (vertices) होते हैं।"],
+  ["Shapes & Geometry","An unsharpened candle is shaped like a:",["Cone","Cylinder","Sphere","Cube"],"Cylinder","मोमबत्ती बेलनाकार (Cylinder) होती है।"],
+  ["Shapes & Geometry","Slanting lines are also known as:",["Horizontal lines","Vertical lines","Diagonal lines","Curved lines"],"Diagonal lines","तिरछी रेखाओं को Diagonal कहते हैं।"],
+  ["Shapes & Geometry","Number of edges in a cube:",["6","8","10","12"],"12","घन में 12 किनारे (edges) होते हैं।"],
+  ["Shapes & Geometry","A slice of pizza is shaped like a:",["Circle","Triangle","Square","Rectangle"],"Triangle","पिज़्ज़ा का स्लाइस त्रिभुज जैसा होता है।"],
+  ["Shapes & Geometry","Which shape has 4 sides but only opposite sides equal?",["Square","Rectangle","Triangle","Circle"],"Rectangle","आयत (Rectangle) की आमने-सामने की भुजाएँ बराबर होती हैं।"],
+  ["Fractions & Data","Half of something is written as:",["1/4","1/2","3/4","1/3"],"1/2","आधा = 1/2."],
+  ["Fractions & Data","One quarter means:",["1 out of 2 parts","1 out of 3 parts","1 out of 4 parts","All parts"],"1 out of 4 parts","चौथाई = 1/4."],
+  ["Fractions & Data","How many quarters make 1 whole?",["2","3","4","5"],"4","चार चौथाई मिलकर 1 पूरा बनता है।"],
+  ["Fractions & Data","In a fraction 1/3, the top number 1 is called:",["Denominator","Numerator","Divisor","Factor"],"Numerator","अंश को Numerator कहते हैं।"],
+  ["Fractions & Data","Information collected in form of numbers is called:",["Data","Story","Drawing","Equation"],"Data","संख्यात्मक सूचना को Data कहते हैं।"],
+  ["Fractions & Data","A tally mark representing number 5 looks like:",["||||","|||| crossed","|||","V"],"|||| crossed","4 खड़ी रेखाओं पर एक तिरछी रेखा 5 दर्शाती है।"],
+  ["Patterns","Complete: 5, 10, 15, 20, ___",["22","24","25","30"],"25","+5 का नियम: 20 + 5 = 25."],
+  ["Patterns","Complete: 90, 80, 70, 60, ___",["40","50","55","65"],"50","-10 का नियम: 60 - 10 = 50."],
+  ["Patterns","Complete: 11, 22, 33, 44, ___",["50","54","55","66"],"55","11 का पहाड़ा: 44 + 11 = 55."],
+  ["Patterns","Complete: 2A, 4B, 6C, ___",["7D","8D","8E","10D"],"8D","संख्या में +2 और अगला अक्षर: 8D."]
+];
+
+const Q_SCIENCE = [
+  ["Plants","Plants that have thorns to protect themselves:",["Rose & Cactus","Mint & Tulsi","Lotus & Lily","Mango & Banyan"],"Rose & Cactus","गुलाब और कैक्टस में कांटे होते हैं।"],
+  ["Plants","The flat green part of a leaf is called leaf:",["Blade (Lamina)","Vein","Petiole","Stem"],"Blade (Lamina)","पत्ती के चौड़े हरे भाग को Leaf Blade कहते हैं।"],
+  ["Plants","Which tree does NOT shed its leaves all at once?",["Deciduous","Evergreen","Desert","Dry"],"Evergreen","सदाबहार (Evergreen) पेड़ साल भर हरे रहते हैं।"],
+  ["Plants","What do leaves give out through tiny pores?",["Water vapour & Oxygen","Soil","Food","Pollen"],"Water vapour & Oxygen","पत्तियों के रंध्रों (Stomata) से जलवाष्प और ऑक्सीजन बाहर निकलती है।"],
+  ["Plants","Ginger is which part of the plant?",["Root","Stem","Leaf","Fruit"],"Stem","अदरक भूमिगत तना (Stem) है।"],
+  ["Plants","Which of these is a seed that we eat as a pulse (dal)?",["Pea & Gram","Apple","Potato","Cabbage"],"Pea & Gram","मटर और चना खाने योग्य बीज (दालें) हैं।"],
+  ["Plants","Wood for furniture mainly comes from:",["Shrubs","Big Trees (Trunks)","Herbs","Creepers"],"Big Trees (Trunks)","लकड़ी बड़े पेड़ों के तनों से मिलती है।"],
+  ["Plants","Which part of a cauliflower plant do we eat?",["Root","Stem","Flower","Leaf"],"Flower","फूलगोभी का हम फूल (Flower) खाते हैं।"],
+  ["Plants","Climbers climb with the help of thin thread-like parts called:",["Roots","Tendrils","Thorns","Bark"],"Tendrils","तेंदुआ/प्रतान (Tendrils) सहारे को लपेटते हैं।"],
+  ["Plants","Seeds of which plant are crushed to get mustard oil?",["Sunflower","Mustard (सरसों)","Coconut","Rose"],"Mustard (सरसों)","सरसों के बीजों से कड़वा तेल बनता है।"],
+  ["Animals","Animals that eat only flesh of dead animals are called:",["Scavengers","Herbivores","Parasites","Insects"],"Scavengers","गिद्ध और लकड़बग्घा मृत जीवों को खाते हैं (Scavengers)."],
+  ["Animals","Body covering of birds is made of:",["Scales","Feathers","Fur","Shell"],"Feathers","पक्षियों का शरीर पंखों (Feathers) से ढका होता है।"],
+  ["Animals","Body covering of a snail or tortoise is a hard:",["Skin","Shell","Hair","Feather"],"Shell","घोंघे और कछुए पर कठोर खोल (Shell) होता है।"],
+  ["Animals","Fish breathe in water using their:",["Lungs","Gills","Nose","Skin"],"Gills","मछलियां गलफड़ों (Gills) से सांस लेती हैं।"],
+  ["Animals","Which animal has waterproof scales on its body?",["Snake & Lizard","Dog","Pigeon","Frog"],"Snake & Lizard","सांप और छिपकली के शरीर पर शल्क (Scales) होते हैं।"],
+  ["Animals","A baby butterfly is called a:",["Caterpillar (Larva)","Pupa","Cub","Foal"],"Caterpillar (Larva)","तितली के बच्चे को कैटरपिलर कहते हैं।"],
+  ["Animals","Which bird builds nest inside hollow tree trunks?",["Woodpecker","Pigeon","Crow","Sparrow"],"Woodpecker","कठफोड़वा (Woodpecker) पेड़ के तने में छेद करता है।"],
+  ["Animals","Which animal lives in a kennel?",["Horse","Dog","Cow","Pig"],"Dog","पालतू कुत्ते के घर को Kennel कहते हैं।"],
+  ["Animals","Cows and buffaloes are kept in a:",["Shed","Stable","Den","Coop"],"Shed","गाय-भैंस को शेड (Shed) में रखते हैं।"],
+  ["Animals","Birds keep their eggs warm by sitting on them. This is called:",["Incubation","Sleeping","Hatching","Resting"],"Incubation","अंडों को सेने को Incubation कहते हैं।"],
+  ["Animals","Which animal gives us leather after dying naturally?",["Snake & Buffalo","Fish","Earthworm","Bee"],"Snake & Buffalo","भैंस और बड़े जानवरों की खाल से चमड़ा बनता है।"],
+  ["Animals","An animal that gnaws nuts with sharp front teeth:",["Squirrel & Rat","Lion","Elephant","Cow"],"Squirrel & Rat","गिलहरी और चूहा चीजों को कुतरते हैं।"],
+  ["Animals","Which bird has webbed feet to swim in water?",["Duck","Eagle","Sparrow","Parrot"],"Duck","बतख के पैर जालीदार (Webbed) होते हैं।"],
+  ["Animals","Sound made by a frog is called:",["Croak","Buzz","Chirp","Hiss"],"Croak","मेंढक टर्राता है (Croak)."],
+  ["Animals","Bees store honey in small wax cells called a:",["Honeycomb","Burrow","Den","Coop"],"Honeycomb","मधुमक्खी का छत्ता Honeycomb कहलाता है।"],
+  ["Human Body","How many teeth are there in a temporary (milk) teeth set?",["10","20","28","32"],"20","दूध के दांत कुल 20 होते हैं।"],
+  ["Human Body","Which part of the body connects the head to the trunk?",["Neck","Chest","Shoulder","Elbow"],"Neck","गर्दन सिर और धड़ को जोड़ती है।"],
+  ["Human Body","Muscles are attached to our:",["Skin","Bones","Nails","Hair"],"Bones","मांसपेशियां हड्डियों (Bones) से जुड़ी होती हैं।"],
+  ["Human Body","Which organ filters waste from blood to produce urine?",["Heart","Kidneys","Lungs","Stomach"],"Kidneys","गुर्दे (Kidneys) रक्त को साफ करते हैं।"],
+  ["Human Body","Food is chewed in the mouth with the help of teeth and:",["Saliva (लार)","Blood","Water","Air"],"Saliva (लार)","लार भोजन को गीला और सुपाच्य बनाती है।"],
+  ["Human Body","Hard white substance covering outside of our teeth is:",["Enamel","Bone","Calcium","Skin"],"Enamel","इनेमल शरीर का सबसे कठोर पदार्थ है।"],
+  ["Human Body","Which internal bone cage protects our heart and lungs?",["Skull","Ribcage (पसलियां)","Backbone","Pelvis"],"Ribcage (पसलियां)","पसलियों का ढांचा हृदय-फेफड़ों की रक्षा करता है।"],
+  ["Human Body","The bony structure that protects our brain is the:",["Skull (खोपड़ी)","Ribcage","Spine","Jaw"],"Skull (खोपड़ी)","खोपड़ी मस्तिष्क को चोट से बचाती है।"],
+  ["Human Body","Number of fingers (including thumbs) on both hands:",["5","10","15","20"],"10","दोनों हाथों में कुल 10 उंगलियां होती हैं।"],
+  ["Human Body","We can smell pleasant perfumes because of our:",["Nose","Ears","Tongue","Eyes"],"Nose","नाक सूंघने का काम करती है।"],
+  ["Food & Nutrition","Which nutrient gives our body warmth and extra energy?",["Fats","Water","Roughage","Salt"],"Fats","वसा (Fats) शरीर को ऊर्जा और गर्माहट देती है।"],
+  ["Food & Nutrition","Which food helps in strong bone and teeth formation?",["Milk & Cheese (Calcium)","Sugar","Soft drinks","Chips"],"Milk & Cheese (Calcium)","दूध में कैल्शियम होता है जो हड्डियों को मजबूत करता है।"],
+  ["Food & Nutrition","Raw foods that should be thoroughly washed before eating:",["Fruits and Salad veggies","Wheat flour","Raw rice","Meat"],"Fruits and Salad veggies","फलों और सलाद को धोकर कच्चा खाते हैं।"],
+  ["Food & Nutrition","People who do NOT eat meat, eggs or fish are called:",["Vegetarians","Non-vegetarians","Carnivores","Omnivores"],"Vegetarians","शाकाहारी = Vegetarians."],
+  ["Food & Nutrition","Meal eaten in the morning is called:",["Dinner","Lunch","Breakfast","Snacks"],"Breakfast","सुबह का भोजन Breakfast कहलाता है।"],
+  ["Water & Weather","Process of water turning into vapour due to sun's heat:",["Evaporation","Condensation","Freezing","Melting"],"Evaporation","वाष्पीकरण (Evaporation)."],
+  ["Water & Weather","Process of water vapour cooling down to form water drops:",["Condensation","Evaporation","Boiling","Filtering"],"Condensation","संघनन (Condensation) से बादल बनते हैं।"],
+  ["Water & Weather","Falling of water droplets from clouds as rain is called:",["Precipitation","Drying","Heating","Melting"],"Precipitation","वर्षा = Precipitation."],
+  ["Water & Weather","Snow falls in which kind of places during winter?",["Hot deserts","Cold high mountains","Deep seas","Plains"],"Cold high mountains","ऊंचे ठंडे पहाड़ों पर बर्फबारी होती है।"],
+  ["Water & Weather","Tiny drops of water seen on grass on cold winter mornings:",["Dew (ओस)","Hail","Snow","Fog"],"Dew (ओस)","सुबह घास पर ओस की बूंदें दिखती हैं।"],
+  ["Water & Weather","A thick cloud of tiny water droplets close to the ground:",["Fog (कोहरा)","Smoke","Storm","Rain"],"Fog (कोहरा)","जमीन के पास घने कोहरे को Fog कहते हैं।"],
+  ["Water & Weather","Water stored deep underground is pulled out using a:",["Tube-well or Hand-pump","Fan","Heater","Tap directly"],"Tube-well or Hand-pump","हैंडपंप से जमीन के नीचे का पानी निकालते हैं।"],
+  ["Water & Weather","We should NOT waste water. We must _____ it.",["Conserve (Save)","Pollute","Boil always","Throw"],"Conserve (Save)","जल संरक्षण करना चाहिए।"],
+  ["Water & Weather","Which day is hot and sunny?",["Summer day","Winter night","Monsoon evening","Autumn night"],"Summer day","गर्मी का दिन तेज धूप वाला होता है।"],
+  ["Water & Weather","Instrument that shows direction of the wind:",["Wind vane (Weathercock)","Thermometer","Clock","Ruler"],"Wind vane (Weathercock)","विंड वेन हवा की दिशा बताता है।"],
+  ["Air & Atmosphere","Which gas is most abundant in our air?",["Nitrogen","Oxygen","Carbon dioxide","Hydrogen"],"Nitrogen","हवा में सबसे अधिक (78%) नाइट्रोजन होती है।"],
+  ["Air & Atmosphere","All living beings need which gas to breathe and stay alive?",["Oxygen","Carbon dioxide","Helium","Nitrogen"],"Oxygen","सांस लेने के लिए ऑक्सीजन आवश्यक है।"],
+  ["Air & Atmosphere","Air has weight and occupies:",["Space","No room","Colour","Smell"],"Space","हवा स्थान घेरती है और उसमें भार होता है।"],
+  ["Air & Atmosphere","A burning candle goes out when covered with a glass because:",["Oxygen is cut off","Wax melts","Glass breaks","Candle gets cold"],"Oxygen is cut off","आग जलने के लिए ऑक्सीजन जरूरी है।"],
+  ["Air & Atmosphere","Fast blowing wind that can uproot trees is a:",["Gale / Storm","Breeze","Fog","Dew"],"Gale / Storm","तेज आंधी पेड़ उखाड़ सकती है।"],
+  ["Earth & Universe","Earth is surrounded by a layer of air called the:",["Atmosphere (वायुमंडल)","Hydrosphere","Crust","Space"],"Atmosphere (वायुमंडल)","पृथ्वी के चारों ओर की वायु परत वायुमंडल है।"],
+  ["Earth & Universe","The imaginary line around the middle of Earth is called:",["Equator (भूमध्य रेखा)","Axis","Pole","Orbit"],"Equator (भूमध्य रेखा)","पृथ्वी के मध्य की रेखा भूमध्य रेखा है।"],
+  ["Earth & Universe","Earth takes how long to complete one orbit around the Sun?",["365 and 1/4 days (1 Year)","24 hours","30 days","12 hours"],"365 and 1/4 days (1 Year)","सूर्य का एक चक्कर लगाने में 1 वर्ष लगता है।"],
+  ["Earth & Universe","Changing of seasons is caused by:",["Earth revolving around Sun","Moon spinning","Clouds moving","Rainfall"],"Earth revolving around Sun","परिक्रमा (Revolution) से ऋतुएं बदलती हैं।"],
+  ["Earth & Universe","A group of stars forming a recognizable pattern is a:",["Constellation (तारामंडल)","Planet","Comet","Galaxy"],"Constellation (तारामंडल)","तारों का समूह Constellation कहलाता है (जैसे सप्तर्षि)."],
+  ["Earth & Universe","Name of the North Star that points to the North direction:",["Pole Star (ध्रुव तारा)","Sirius","Sun","Venus"],"Pole Star (ध्रुव तारा)","ध्रुव तारा हमेशा उत्तर दिशा दिखाता है।"],
+  ["Earth & Universe","The Moon changes its shape every night. These shapes are called:",["Phases of the Moon","Eclipses","Shadows","Flares"],"Phases of the Moon","इन्हें चंद्रमा की कलाएं (Phases) कहते हैं।"],
+  ["Earth & Universe","When the Moon is completely dark and invisible, it is called:",["New Moon (अमावस्या)","Full Moon","Half Moon","Crescent"],"New Moon (अमावस्या)","अमावस्या को चाँद नहीं दिखता।"],
+  ["Earth & Universe","When the Moon is seen as a complete bright round disc:",["Full Moon (पूर्णिमा)","New Moon","Crescent","Quarter"],"Full Moon (पूर्णिमा)","पूर्णिमा को पूरा गोल चाँद दिखता है।"],
+  ["Earth & Universe","Crescent moon looks like a:",["Sickle (हँसिया)","Ball","Plate","Box"],"Sickle (हँसिया)","दूज का चाँद हँसिये जैसा दिखता है।"],
+  ["Materials & Rocks","Very hard rock used to build monuments like Red Fort:",["Red Sandstone","Chalk","Clay","Coal"],"Red Sandstone","लाल किला लाल बलुआ पत्थर से बना है।"],
+  ["Materials & Rocks","Taj Mahal is made of which white metamorphic rock?",["White Marble (संगमरमर)","Granite","Slate","Coal"],"White Marble (संगमरमर)","ताजमहल सफेद संगमरमर से बना है।"],
+  ["Materials & Rocks","Black rock burnt as a fuel in power stations:",["Coal (कोयला)","Granite","Chalk","Sandstone"],"Coal (कोयला)","कोयला एक ईंधन खनिज है।"],
+  ["Materials & Rocks","Soft white rock used by teachers to write on blackboards:",["Chalk","Granite","Diamond","Slate"],"Chalk","चाक एक नरम चूना पत्थर है।"],
+  ["Materials & Rocks","The hardest naturally occurring mineral on Earth is:",["Diamond (हीरा)","Iron","Gold","Graphite"],"Diamond (हीरा)","हीरा सबसे कठोर प्राकृतिक पदार्थ है।"],
+  ["Materials & Rocks","Lead in writing pencils is made of soft black mineral called:",["Graphite","Coal","Chalk","Clay"],"Graphite","पेंसिल की निब ग्रेफाइट से बनती है।"],
+  ["Materials & Rocks","Things made of glass break easily. Glass is:",["Brittle / Fragile","Flexible","Elastic","Heavy"],"Brittle / Fragile","कांच नाजुक (Brittle) होता है।"],
+  ["Materials & Rocks","Rubber is an elastic material because it can:",["Stretch and return to shape","Melt in water","Break into dust","Burn safely"],"Stretch and return to shape","रबर खिंचकर वापस आकार ले लेती है।"],
+  ["Materials & Rocks","Which material is attracted by a magnet?",["Iron & Steel","Wood","Plastic","Glass"],"Iron & Steel","लोहा चुंबक की ओर खिंचता है।"],
+  ["Materials & Rocks","Raincoats are made of plastic or rubber because they are:",["Waterproof","Soft","Heavy","Warm"],"Waterproof","प्लास्टिक पानी को अंदर नहीं आने देता।"],
+  ["Housing & Clothes","Houses on wheels pulled by vehicles or horses are:",["Caravans","Igloos","Houseboats","Tents"],"Caravans","पहियों वाले चलते-फिरते घर Caravan हैं।"],
+  ["Housing & Clothes","A house made of canvas cloth used by campers is a:",["Tent","Igloo","Stilt house","Bungalow"],"Tent","तम्बू (Tent) कपड़े से बनता है।"],
+  ["Housing & Clothes","Houses built on wooden poles in places with heavy rains are:",["Stilt houses","Igloos","Tents","Caravans"],"Stilt houses","बाढ़ वाले इलाकों में स्टिल्ट हाउस बनते हैं।"],
+  ["Housing & Clothes","A floating house on a lake (like in Kashmir) is a:",["Houseboat","Caravan","Yacht","Igloo"],"Houseboat","डल झील में हाउसबोट तैरते हैं।"],
+  ["Housing & Clothes","We wear woolen clothes in winter because wool traps:",["Body heat","Cold air","Rainwater","Sunlight"],"Body heat","ऊन शरीर की गर्मी को बाहर नहीं जाने देती।"],
+  ["Housing & Clothes","Linen cloth is obtained from the fibers of which plant?",["Flax plant","Cotton plant","Jute plant","Rose plant"],"Flax plant","फ्लेक्स पौधे से लिनन कपड़ा बनता है।"],
+  ["Housing & Clothes","Uniforms are worn by:",["School students & Police","Doctors & Nurses","Firefighters","All of these"],"All of these","ये सभी अपनी खास वर्दी पहनते हैं।"],
+  ["Housing & Clothes","Pucca houses are built using:",["Bricks, cement and iron","Mud and straw","Leaves only","Snow blocks"],"Bricks, cement and iron","पक्के मकान ईंट, सीमेंट और लोहे से बनते हैं।"],
+  ["Housing & Clothes","A sloping roof allows rainwater and snow to:",["Slide down easily","Stay on roof","Enter rooms","Melt glass"],"Slide down easily","ढलान वाली छत से पानी-बर्फ फिसल जाती है।"],
+  ["Housing & Clothes","Kitchen waste should be kept in which colour bin for composting?",["Green bin","Blue bin","Red bin","Yellow bin"],"Green bin","गीले जैविक कचरे के लिए हरा कूड़ेदान होता है।"],
+  ["Safety & Health","When someone gets a burn, we should immediately pour:",["Cold clean water","Hot oil","Ink","Sand"],"Cold clean water","जले पर तुरंत ठंडा पानी डालना चाहिए।"],
+  ["Safety & Health","Never taste unknown medicines because they can be:",["Poisonous / Harmful","Tasty","Sweet","Nutritious"],"Poisonous / Harmful","अनजानी दवाइयां खतरनाक हो सकती हैं।"],
+  ["Safety & Health","Pedestrians should walk on which side if there is no footpath?",["Facing oncoming traffic","With back to traffic","Middle of road","Blindfolded"],"Facing oncoming traffic","सामने से आते वाहनों को देखते हुए चलना चाहिए।"],
+  ["Safety & Health","To avoid mosquito bites and malaria, we should NOT let water:",["Stagnate (collect in puddles)","Flow in taps","Boil","Freeze"],"Stagnate (collect in puddles)","रुके हुए पानी में मच्छर पनपते हैं।"],
+  ["Safety & Health","We should cover our mouth while coughing with a:",["Handkerchief","Open hand","Book","Ruler"],"Handkerchief","खांसते समय रुमाल लगाना चाहिए।"],
+  ["Safety & Health","Playing on the road can cause:",["Accidents","Good health","High marks","Quick running"],"Accidents","सड़क पर खेलने से दुर्घटना हो सकती है।"],
+  ["Safety & Health","Germs enter our body through unwashed hands and cause:",["Diseases & Stomach ache","Strong bones","Sharp memory","Energy"],"Diseases & Stomach ache","गंदे हाथों से पेट की बीमारियां होती हैं।"],
+  ["Safety & Health","Sharp tools like scissors should be handed over by holding the:",["Closed blade end","Handle towards receiver","Sharp tip pointed","Throwing"],"Handle towards receiver","हत्था सामने वाले की तरफ करके दें।"],
+  ["Safety & Health","In a moving car, kids should always wear a:",["Seatbelt","Helmet","Raincoat","Cap"],"Seatbelt","कार में हमेशा सीटबेल्ट लगाएं।"],
+  ["Safety & Health","While riding a bicycle on road, we must wear a:",["Helmet","Glove only","Swimsuit","Scarf"],"Helmet","साइकिल चलाते समय हेलमेट सिर बचाता है।"],
+  ["Safety & Health","Regular physical exercise and outdoor play make our muscles:",["Strong and active","Weak","Soft","Lazy"],"Strong and active","व्यायाम से मांसपेशियां मजबूत होती हैं।"],
+  ["Safety & Health","Eating too many candies and chocolates ruins our:",["Teeth","Hair","Nails","Shoes"],"Teeth","ज्यादा मीठा खाने से दांत सड़ते हैं (Cavity)."],
+  ["Safety & Health","Keep your nails short and clean by trimming them with a:",["Nail cutter","Knife","Teeth","Scissors"],"Nail cutter","नाखून नेल कटर से काटें।"],
+  ["Safety & Health","Sunlight gives us which vitamin that makes bones strong?",["Vitamin D","Vitamin A","Vitamin B","Vitamin K"],"Vitamin D","धूप से विटामिन डी मिलता है।"],
+  ["Safety & Health","Throwing banana peels on road can make people:",["Slip and fall","Happy","Run fast","Jump"],"Slip and fall","केले के छिलके से कोई भी फिसल सकता है।"]
+];
+
+const Q_ENGLISH = [
+  ["Nouns","Identify the Collective Noun: 'A flock of birds flew by.'",["Flock","Birds","Flew","By"],"Flock","पक्षियों के समूह को 'Flock' कहते हैं।"],
+  ["Nouns","Which of these is an Abstract Noun (feeling/quality)?",["Honesty","Book","Table","Pen"],"Honesty","ईमानदारी (Honesty) एक गुण/भाव है।"],
+  ["Nouns","Proper noun in: 'We visited Shimla in May.'",["Shimla and May","Visited","We","In"],"Shimla and May","स्थान (Shimla) और महीने (May) दोनों Proper Noun हैं।"],
+  ["Nouns","Which noun names a material?",["Gold","Boy","City","Dog"],"Gold","सोना (Gold) एक Material Noun है।"],
+  ["Nouns","A collection of keys is called a:",["Bunch","Flock","Pack","Herd"],"Bunch","चाबियों का गुच्छा = Bunch."],
+  ["Pronouns","'This pen is mine. That one is _____.'",["yours","your","you","he"],"yours","Possessive Pronoun: yours."],
+  ["Pronouns","Replace underline: '<u>Meena and Seema</u> are sisters.'",["She","They","We","It"],"They","दो लड़कियों के लिए Pronoun 'They'."],
+  ["Pronouns","'The bird made a nest for _____ babies.'",["its","it","his","her"],"its","पक्षी/जानवर के लिए 'its'."],
+  ["Pronouns","'Who is knocking at the door? It is _____.'",["me","I","he","she"],"me","सामान्य बोलचाल में: It is me."],
+  ["Pronouns","Which word is a Pronoun?",["Under","They","Happy","Sing"],"They","They एक सर्वनाम (Pronoun) है।"],
+  ["Articles","He is ______ European citizen. (Starts with 'Yu' consonant sound)",["a","an","the","no article"],"a","European में 'य' (consonant) ध्वनि है, अतः 'a'."],
+  ["Articles","She returned after ______ hour.",["a","an","the","two"],"an","Hour में 'आ' स्वर ध्वनि है, अतः 'an'."],
+  ["Articles","______ Pacific Ocean is very deep.",["A","An","The","No article"],"The","महासागरों के नाम के आगे 'The' लगता है।"],
+  ["Articles","Give me ______ slice of bread.",["a","an","the","some"],"a","Slice व्यंजन ध्वनि 'स' से शुरू होता है।"],
+  ["Articles","Look at ______ aeroplane in the sky.",["a","an","the","this"],"the","आसमान में दिख रहे खास विमान के लिए 'the'."],
+  ["Articles","I bought ______ notebook and a pen.",["a","an","the","two"],"a","Notebook व्यंजन ध्वनि 'न' से शुरू होता है।"],
+  ["Articles","Copper is ______ useful metal. ('Yu' sound)",["a","an","the","no article"],"a","Useful में 'य' ध्वनि है, अतः 'a'."],
+  ["Articles","He is reading ______ holy book, the Gita.",["a","an","the","one"],"a","एकवचन के लिए 'a holy book'."],
+  ["Articles","______ Earth is our mother planet.",["A","An","The","No article"],"The","पृथ्वी अनोखी है, अतः 'The'."],
+  ["Articles","She found ______ one-rupee coin. ('Wa' consonant sound)",["a","an","the","two"],"a","One में 'व' ध्वनि है, अतः 'a one-rupee coin'."],
+  ["Plurals","Plural of 'Story':",["Storys","Stories","Storeys","Storyes"],"Stories","Consonant + y होने पर 'ies': Stories."],
+  ["Plurals","Plural of 'Hero':",["Heros","Heroes","Heroies","Heroen"],"Heroes","o के अंत में es: Heroes."],
+  ["Plurals","Plural of 'Knife':",["Knifes","Knives","Knifex","Knive"],"Knives","fe हटाकर 'ves': Knives."],
+  ["Plurals","Plural of 'Man':",["Mans","Men","Mens","Manes"],"Men","Man का बहुवचन Men होता है।"],
+  ["Plurals","Plural of 'Fish' (same kind):",["Fishes","Fish","Fishs","Fishen"],"Fish","समान प्रजाति की मछलियों के लिए 'Fish' ही रहता है।"],
+  ["Plurals","Plural of 'Ox':",["Oxes","Oxen","Oxies","Oxs"],"Oxen","Ox का अनियमित बहुवचन Oxen है।"],
+  ["Plurals","Plural of 'Fox':",["Foxes","Foxs","Foxen","Foxies"],"Foxes","x के बाद es: Foxes."],
+  ["Plurals","Plural of 'Bench':",["Benchs","Benches","Benchies","Benchez"],"Benches","ch के बाद es: Benches."],
+  ["Plurals","Plural of 'Bus':",["Buses","Buss","Busies","Busen"],"Buses","s के बाद es: Buses."],
+  ["Plurals","Plural of 'Goose':",["Gooses","Geese","Geeses","Gooze"],"Geese","Goose का बहुवचन Geese होता है।"],
+  ["Gender","Male of 'Vixen' (Female fox):",["Dog","Fox","Wolf","Lion"],"Fox","मादा लोमड़ी Vixen, नर Fox कहलाता है।"],
+  ["Gender","Feminine of 'Prince':",["Queen","Princess","Lady","Duchess"],"Princess","Prince का स्त्रीलिंग Princess."],
+  ["Gender","Feminine of 'Tiger':",["Tigress","Lioness","Leopard","Cow"],"Tigress","Tiger का स्त्रीलिंग Tigress."],
+  ["Gender","Masculine of 'Wife':",["Husband","Brother","Father","Son"],"Husband","Wife का पुल्लिंग Husband."],
+  ["Gender","Female of 'Peacock':",["Peahen","Duck","Hen","Goose"],"Peahen","मोर का मादा रूप Peahen (मोरनी) है।"],
+  ["Gender","Masculine of 'Actress':",["Actor","Director","Hero","Singer"],"Actor","Actress का पुल्लिंग Actor."],
+  ["Gender","Female of 'Stag' (Male deer):",["Doe / Hind","Ewe","Mare","Cow"],"Doe / Hind","नर हिरण Stag, मादा Doe/Hind."],
+  ["Gender","Masculine of 'Bride':",["Groom (Bridegroom)","Brother","Uncle","Friend"],"Groom (Bridegroom)","Bride (दुल्हन) का दूल्हा Groom."],
+  ["Gender","Feminine of 'Wizard':",["Witch","Queen","Fairy","Lady"],"Witch","जादूगर Wizard, जादूगरनी Witch."],
+  ["Gender","Male of 'Goose':",["Gander","Drake","Rooster","Cock"],"Gander","मादा Goose का नर Gander."],
+  ["Verbs","Choose the helping verb: 'The children were playing.'",["Children","Were","Playing","The"],"Were","Were एक सहायक क्रिया (Helping verb) है।"],
+  ["Verbs","'Rohan ______ his homework daily.'",["do","does","doing","done"],"does","एकवचन Rohan के साथ 'does' आता है।"],
+  ["Verbs","'Cats ______ milk.'",["likes","like","liking","liked"],"like","बहुवचन Cats के साथ मूल verb 'like'."],
+  ["Verbs","'The bell ______ loudly at 2 PM.'",["rang","ringed","rung","ringing"],"rang","Ring का भूतकाल Rang है।"],
+  ["Verbs","'I have ______ my drawing.'",["complete","completed","completing","completes"],"completed","Have के बाद 3rd form 'completed'."],
+  ["Verbs","Past tense of 'Run':",["Runned","Ran","Running","Runs"],"Ran","Run का भूतकाल Ran है।"],
+  ["Verbs","Past tense of 'Write':",["Writed","Wrote","Written","Writing"],"Wrote","Write का Past tense Wrote है।"],
+  ["Verbs","'Birds build nests.' Which is the verb?",["Birds","Build","Nests","Builds"],"Build","Build (बनाना) एक क्रिया है।"],
+  ["Verbs","'She ______ singing a song right now.'",["is","are","were","has"],"is","एकवचन She के साथ 'is'."],
+  ["Verbs","'We ______ a great time yesterday.'",["have","had","has","having"],"had","बीते समय के लिए 'had'."],
+  ["Adjectives","'He has five balloons.' Identify the adjective:",["He","Has","Five","Balloons"],"Five","Five संख्यावाचक विशेषण (Adjective of number) है।"],
+  ["Adjectives","Opposite of 'Polite':",["Kind","Rude / Impolite","Sweet","Gentle"],"Rude / Impolite","Polite (विनम्र) का उल्टा Rude (अशिष्ट)."],
+  ["Adjectives","'The soup is very hot.' Which word is the adjective?",["Soup","Very","Hot","Is"],"Hot","Hot सूप का गुण बता रहा है।"],
+  ["Adjectives","Comparative of 'Tall':",["Taller","Tallest","More tall","Tally"],"Taller","दो में तुलना के लिए 'Taller'."],
+  ["Adjectives","Superlative of 'Good':",["Better","Gooder","Best","Goodest"],"Best","सबसे अच्छा = Best (Good, Better, Best)."],
+  ["Adjectives","Opposite of 'Brave':",["Coward","Hero","Strong","Clever"],"Coward","Brave (बहादुर) का उल्टा Coward (कायर)."],
+  ["Adjectives","Which adjective describes shape?",["Sweet","Circular","Warm","Loud"],"Circular","Circular (गोलाकार) आकार बताता है।"],
+  ["Adjectives","Opposite of 'Wide':",["Broad","Narrow","Deep","Long"],"Narrow","Wide (चौड़ा) का संकरा (Narrow)."],
+  ["Adjectives","'The cheetah is a fast runner.' Fast describes:",["Cheetah","Runner","Is","The"],"Runner","Fast धावक (Runner) की विशेषता बताता है।"],
+  ["Adjectives","Opposite of 'Clean':",["Neat","Dirty","Tidy","Pure"],"Dirty","Clean का विलोम Dirty (गंदा)."],
+  ["Prepositions","'The dog jumped ______ the fence.'",["over","under","between","in"],"over","बाड़ के ऊपर से कूदने के लिए 'over'."],
+  ["Prepositions","'We go to school ______ bus.'",["by","on","in","with"],"by","वाहन से यात्रा के लिए 'by bus'."],
+  ["Prepositions","'The picture is hanging ______ the fireplace.'",["above","into","through","between"],"above","ऊपर टंगे होने के लिए 'above'."],
+  ["Prepositions","'The train passed ______ the dark tunnel.'",["through","on","over","at"],"through","सुरंग के आर-पार जाने के लिए 'through'."],
+  ["Prepositions","'She arrived ______ 5 o'clock.'",["in","on","at","by"],"at","निश्चित समय के आगे 'at' लगता है।"],
+  ["Prepositions","'The children are swimming ______ the pool.'",["in","on","at","to"],"in","पूल के अंदर तैरने के लिए 'in'."],
+  ["Prepositions","'He sat ______ his mother and father.'",["between","among","into","under"],"between","दो के बीच बैठने पर 'between'."],
+  ["Prepositions","'We celebrate Christmas ______ December.'",["on","in","at","from"],"in","महीनों के नाम के आगे 'in' लगता है।"],
+  ["Prepositions","'Independence day is ______ 15th August.'",["in","on","at","to"],"on","तारीखों के आगे 'on' लगता है।"],
+  ["Prepositions","'The cat jumped ______ the kitchen counter.'",["onto","into","in","between"],"onto","सतह पर कूदने के लिए 'onto'."],
+  ["Conjunctions","'I ran fast ______ I missed the bus.'",["and","but","so","or"],"but","विरोधाभास के लिए 'but' (लेकिन)."],
+  ["Conjunctions","'Eat your vegetables ______ you will fall sick.'",["or / otherwise","and","so","because"],"or / otherwise","चेतावनी/विकल्प के लिए 'or'."],
+  ["Conjunctions","'He was carrying an umbrella ______ it was raining.'",["because","but","or","so"],"because","कारण बताने के लिए 'because'."],
+  ["Conjunctions","'She can sing ______ dance very well.'",["and","but","so","if"],"and","दो कलाओं को जोड़ने के लिए 'and'."],
+  ["Conjunctions","'It was very cold ______ we wore jackets.'",["so","because","but","or"],"so","परिणाम बताने के लिए 'so' (इसलिए)."],
+  ["Punctuation","Mark used to separate items in a list: 'Apples, oranges and bananas.'",["Comma (,)","Full stop (.)","Question mark (?)","Colon (:)"],"Comma (,)","सूची में कॉमा (,) लगाते हैं।"],
+  ["Punctuation","Which mark is used in contractions: 'don't'?",["Apostrophe (')","Comma (,)","Hyphen (-)","Period (.)"],"Apostrophe (')","Don't में अपॉस्ट्रॉफी (') है।"],
+  ["Punctuation","'What a lovely flower' should end with:",["!","?",".",","],"!","आश्चर्य व्यक्त करने पर '!'."],
+  ["Punctuation","Correct sentence:",["she lives in Paris.","She lives in paris.","She lives in Paris.","she Lives in Paris."],"She lives in Paris.","पहला अक्षर और शहर का नाम Capital."],
+  ["Punctuation","Which word in the sentence must be capitalized? 'We met uncle john on sunday.'",["uncle and john","john and sunday","sunday only","john only"],"john and sunday","नाम (John) और दिन (Sunday) दोनों Capital होंगे।"],
+  ["Vocabulary","Homophone: 'The wind ______ the dry leaves.' (blew/blue)",["blew","blue","blow","blowing"],"blew","हवा चलने के लिए 'blew'."],
+  ["Vocabulary","Homophone: 'I can ______ the birds singing.' (hear/here)",["hear","here","hair","hare"],"hear","सुनने के लिए 'hear'."],
+  ["Vocabulary","Homophone: 'The rabbit ran into its hole. It was a ______.' (hare/hair)",["hare","hair","heir","hear"],"hare","खरगोश को 'hare' भी कहते हैं।"],
+  ["Vocabulary","A person who flies into outer space:",["Astronaut","Pilot","Sailor","Driver"],"Astronaut","अंतरिक्ष यात्री = Astronaut."],
+  ["Vocabulary","A place where books are kept to read and borrow:",["Library","Bakery","Pharmacy","Museum"],"Library","पुस्तकालय = Library."],
+  ["Vocabulary","Young one of a sheep is a:",["Lamb","Calf","Cub","Kid"],"Lamb","भेड़ का बच्चा = Lamb."],
+  ["Vocabulary","A person who paints walls and canvases:",["Painter","Potter","Carpenter","Baker"],"Painter","चित्रकार/रंगसाज = Painter."],
+  ["Vocabulary","Opposite of 'Ancient' (very old):",["Modern / New","Old","Past","Historic"],"Modern / New","Ancient (प्राचीन) का Modern (आधुनिक)."],
+  ["Vocabulary","Sound made by ducks:",["Quack","Moo","Neigh","Roar"],"Quack","बतख Quack करती है।"],
+  ["Vocabulary","Compound word: Foot + Ball =",["Football","Ballfoot","Footing","Foots"],"Football","Football (फुटबॉल)."],
+  ["Vocabulary","Correct spelling of 'बुधवार':",["Wednesday","Wenesday","Wednesdey","Wednsday"],"Wednesday","सही स्पेलिंग: W-e-d-n-e-s-d-a-y."],
+  ["Vocabulary","Correct spelling of 'फरवरी':",["February","Febuary","Febrary","Feburary"],"February","F-e-b-r-u-a-r-y."],
+  ["Vocabulary","Sound made by an owl:",["Hoot","Chirp","Caw","Quack"],"Hoot","उल्लू Hoot करता है।"],
+  ["Vocabulary","Young one of a goat is a:",["Kid","Calf","Lamb","Cub"],"Kid","बकरी का बच्चा Kid कहलाता है।"],
+  ["Vocabulary","A book containing meanings of words is a:",["Dictionary","Atlas","Novel","Diary"],"Dictionary","शब्दकोश = Dictionary."],
+  ["Vocabulary","A book of maps is called an:",["Atlas","Dictionary","Encyclopedia","Album"],"Atlas","मानचित्रों की किताब = Atlas."],
+  ["Vocabulary","Which word rhymes with 'Train'?",["Rain","Track","Car","Boat"],"Rain","Train और Rain की तुक मिलती है।"],
+  ["Vocabulary","A person who cuts meat is a:",["Butcher","Baker","Barber","Tailor"],"Butcher","कसाई = Butcher."],
+  ["Vocabulary","Opposite of 'Rough':",["Smooth","Hard","Tough","Sharp"],"Smooth","Rough (खुरदरा) का Smooth (चिकना)."],
+  ["Vocabulary","House of a dog is a kennel; house of a pig is a:",["Sty","Shed","Stable","Coop"],"Sty","सूअर के बाड़े को Sty कहते हैं।"]
+];
+
+const Q_GK = [
+  ["India","Who is known as the 'Iron Man of India'?",["Sardar Vallabhbhai Patel","Bhagat Singh","Netaji Subhash","Lal Bahadur Shastri"],"Sardar Vallabhbhai Patel","सरदार वल्लभभाई पटेल को लौह पुरुष कहते हैं।"],
+  ["India","Tallest statue in the world, 'Statue of Unity', is in which Indian state?",["Gujarat","Maharashtra","Rajasthan","Delhi"],"Gujarat","स्टैच्यू ऑफ यूनिटी गुजरात में नर्मदा नदी पर है।"],
+  ["India","Official residence of the President of India is:",["Rashtrapati Bhavan","White House","Parliament House","Prime Minister House"],"Rashtrapati Bhavan","राष्ट्रपति भवन नई दिल्ली में है।"],
+  ["India","National Motto written below the National Emblem of India:",["Satyameva Jayate","Jai Hind","Vande Mataram","Inquilab Zindabad"],"Satyameva Jayate","सत्यमेव जयते (सत्य की ही जीत होती है)."],
+  ["India","State in India known as the 'Land of Five Rivers':",["Punjab","Haryana","Uttar Pradesh","Bihar"],"Punjab","पंजाब को 5 नदियों की भूमि कहते हैं।"],
+  ["India","Longest beach in India, Marina Beach, is in which city?",["Chennai","Mumbai","Kolkata","Goa"],"Chennai","मरीना बीच चेन्नई (तमिलनाडु) में है।"],
+  ["India","Golden Temple is located in which city?",["Amritsar","Delhi","Chandigarh","Jaipur"],"Amritsar","स्वर्ण मंदिर अमृतसर (पंजाब) में है।"],
+  ["India","Which Indian state is famous for its tea gardens and one-horned rhinos?",["Assam","Kerala","Punjab","Gujarat"],"Assam","असम की चाय और काजीरंगा गेंडा प्रसिद्ध हैं।"],
+  ["India","Who designed the National Flag of India (Tiranga)?",["Pingali Venkayya","Rabindranath Tagore","Bankim Chandra","Mahatma Gandhi"],"Pingali Venkayya","पिंगली वेंकैया ने तिरंगे का डिजाइन बनाया था।"],
+  ["India","Hawa Mahal is located in which city?",["Jaipur","Agra","Udaipur","Jodhpur"],"Jaipur","हवा महल जयपुर (राजस्थान) में है।"],
+  ["World","Which country is called the 'Land of the Rising Sun'?",["Japan","China","India","Australia"],"Japan","जापान को सूर्योदय का देश कहते हैं।"],
+  ["World","Longest river in the world is the:",["Nile River (Egypt)","Amazon River","Ganga","Mississippi"],"Nile River (Egypt)","नील नदी विश्व की सबसे लंबी नदी है।"],
+  ["World","Largest hot desert in the world is the:",["Sahara Desert (Africa)","Thar Desert","Gobi Desert","Kalahari"],"Sahara Desert (Africa)","सहारा रेगिस्तान दुनिया का सबसे बड़ा गर्म मरुस्थल है।"],
+  ["World","Which animal is native to Australia and carries babies in a pouch?",["Kangaroo","Panda","Tiger","Zebra"],"Kangaroo","कंगारू ऑस्ट्रेलिया का प्रसिद्ध जीव है।"],
+  ["World","Capital of the United Kingdom (UK) is:",["London","Paris","Berlin","Rome"],"London","ब्रिटेन की राजधानी लंदन है।"],
+  ["World","Capital of the United States of America (USA) is:",["Washington, D.C.","New York","Los Angeles","Chicago"],"Washington, D.C.","अमेरिका की राजधानी वाशिंगटन, डी.सी. है।"],
+  ["World","Great Wall of China is located in which country?",["China","Japan","Korea","Mongolia"],"China","चीन की विशाल दीवार चीन में है।"],
+  ["World","Which country is famous for Pyramids and the Sphinx?",["Egypt (मिस्र)","Greece","Italy","India"],"Egypt (मिस्र)","मिस्र के पिरामिड विश्व प्रसिद्ध हैं।"],
+  ["World","Largest island in the world is:",["Greenland","Madagascar","Sri Lanka","Iceland"],"Greenland","ग्रीनलैंड दुनिया का सबसे बड़ा द्वीप है।"],
+  ["World","Leaning Tower of Pisa is located in which European country?",["Italy","France","Germany","Spain"],"Italy","पीसा की झुकी मीनार इटली में है।"],
+  ["Science & Inventions","Who invented the electric light bulb?",["Thomas Edison","Alexander Graham Bell","Isaac Newton","Albert Einstein"],"Thomas Edison","थॉमस एडिसन ने बिजली के बल्ब का आविष्कार किया।"],
+  ["Science & Inventions","Who invented the telephone?",["Alexander Graham Bell","Thomas Edison","Wright Brothers","Galileo"],"Alexander Graham Bell","ग्राहम बेल ने टेलीफोन बनाया।"],
+  ["Science & Inventions","Who invented the aeroplane?",["Wright Brothers (Orville & Wilbur)","Edison","Ford","Newton"],"Wright Brothers (Orville & Wilbur)","राइट ब्रदर्स ने पहला हवाई जहाज उड़ाया।"],
+  ["Science & Inventions","Who discovered gravity when an apple fell on his head?",["Sir Isaac Newton","Albert Einstein","Galileo","Stephen Hawking"],"Sir Isaac Newton","आइजैक न्यूटन ने गुरुत्वाकर्षण की खोज की।"],
+  ["Science & Inventions","Who was the first human to walk on the Moon?",["Neil Armstrong (1969)","Yuri Gagarin","Rakesh Sharma","Buzz Aldrin"],"Neil Armstrong (1969)","नील आर्मस्ट्रांग चंद्रमा पर कदम रखने वाले पहले व्यक्ति थे।"],
+  ["Science & Inventions","Who was the first Indian astronaut to travel to space?",["Rakesh Sharma (1984)","Kalpana Chawla","Sunita Williams","Vikram Sarabhai"],"Rakesh Sharma (1984)","राकेश शर्मा अंतरिक्ष जाने वाले पहले भारतीय थे।"],
+  ["Science & Inventions","First artificial satellite launched by India was named after:",["Aryabhata","Bhaskara","Rohini","Chandrayaan"],"Aryabhata","भारत का पहला उपग्रह आर्यभट्ट (1975) था।"],
+  ["Science & Inventions","Which gas do we exhale when we breathe out?",["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"],"Carbon dioxide","हम सांस छोड़ते समय CO2 निकालते हैं।"],
+  ["Science & Inventions","Which metal is liquid at room temperature?",["Mercury (पारा)","Iron","Gold","Silver"],"Mercury (पारा)","पारा कमरे के तापमान पर तरल रहता है।"],
+  ["Science & Inventions","Which planet has beautiful visible rings around it?",["Saturn (शनि)","Mars","Venus","Mercury"],"Saturn (शनि)","शनि ग्रह के चारों ओर सुंदर वलय (rings) हैं।"],
+  ["Computers","Which computer key erases letters to the left of the cursor?",["Backspace","Enter","Shift","Caps Lock"],"Backspace","बैकस्पेस बाईं ओर के अक्षर मिटाता है।"],
+  ["Computers","To type capital letters continuously, we turn on:",["Caps Lock","Spacebar","Enter","Escape"],"Caps Lock","कैप्स लॉक से सभी अक्षर बड़े लिखे जाते हैं।"],
+  ["Computers","Small blinking vertical line on a screen showing where you will type:",["Cursor","Pointer","Icon","Window"],"Cursor","कर्सर लिखने का स्थान दिखाता है।"],
+  ["Computers","Handheld pointing device with left and right buttons and a scroll wheel:",["Mouse","Keyboard","Printer","Webcam"],"Mouse","माउस एक पॉइंटिंग डिवाइस है।"],
+  ["Computers","A portable, battery-powered computer you can carry in a bag:",["Laptop","Desktop","Supercomputer","Server"],"Laptop","लैपटॉप आसानी से कहीं भी ले जा सकते हैं।"],
+  ["Computers","Device used to listen to sound from a computer privately without disturbing others:",["Headphones / Earphones","Printer","Microphone","Monitor"],"Headphones / Earphones","हेडफोन कान में लगाकर सुनते हैं।"],
+  ["Computers","What does www stand for in a website address?",["World Wide Web","World Wide Word","Wide World Web","Web World Wide"],"World Wide Web","WWW = World Wide Web."],
+  ["Computers","Physical parts of a computer that you can touch are called:",["Hardware","Software","Internet","Data"],"Hardware","हार्डवेयर को छू सकते हैं।"],
+  ["Computers","Programs and apps that run on a computer are called:",["Software","Hardware","Cables","Chips"],"Software","सॉफ्टवेयर प्रोग्राम होते हैं।"],
+  ["Computers","Which key is pressed to start a new paragraph or line?",["Enter key","Spacebar","Ctrl","Alt"],"Enter key","एंटर की से नई लाइन शुरू होती है।"],
+  ["Sports","Wimbledon Championship is associated with which sport?",["Lawn Tennis","Cricket","Badminton","Table Tennis"],"Lawn Tennis","विंबलडन लॉन टेनिस का प्रसिद्ध टूर्नामेंट है।"],
+  ["Sports","How many players are in a Volleyball team on court?",["6","7","9","11"],"6","वॉलीबॉल कोर्ट पर प्रति टीम 6 खिलाड़ी होते हैं।"],
+  ["Sports","How many players play on court in a Basketball team?",["5","6","7","11"],"5","बास्केटबॉल में 5 खिलाड़ी खेलते हैं।"],
+  ["Sports","Which Indian batsman hit six sixes in one over in T20 World Cup?",["Yuvraj Singh","MS Dhoni","Rohit Sharma","Virat Kohli"],"Yuvraj Singh","युवराज सिंह ने 2007 में 6 छक्के मारे थे।"],
+  ["Sports","Which game is played on ice with sticks and a puck?",["Ice Hockey","Figure Skating","Curling","Polo"],"Ice Hockey","आइस हॉकी बर्फ पर पक (puck) से खेलते हैं।"],
+  ["Sports","Mary Kom is a famous Indian Olympic medalist in:",["Boxing","Wrestling","Weightlifting","Shooting"],"Boxing","मैरी कॉम प्रसिद्ध मुक्केबाज (Boxer) हैं।"],
+  ["Sports","Mirabai Chanu won Olympic medal for India in:",["Weightlifting (भारोत्तोलन)","Boxing","Badminton","Javelin"],"Weightlifting (भारोत्तोलन)","मीराबाई चानू भारोत्तोलक हैं।"],
+  ["Sports","How many bases are there in Baseball?",["4","3","5","6"],"4","बेसबॉल में 4 बेस होते हैं।"],
+  ["Sports","National sport of the United States of America is:",["Baseball","Cricket","Rugby","Soccer"],"Baseball","बेसबॉल अमेरिका का राष्ट्रीय खेल है।"],
+  ["Sports","Which sport uses terms like Checkmate and Stalemate?",["Chess","Carrom","Ludo","Scrabble"],"Chess","शतरंज (Chess) में शह और मात होती है।"],
+  ["Festivals & Culture","Harvest festival celebrated with dhol and bhangra dance in Punjab:",["Baisakhi","Onam","Pongal","Bihu"],"Baisakhi","बैसाखी पंजाब का प्रसिद्ध फसल उत्सव है।"],
+  ["Festivals & Culture","Harvest festival celebrated with boiling sweet rice in Tamil Nadu:",["Pongal","Baisakhi","Bihu","Lohri"],"Pongal","पोंगल तमिलनाडु का प्रमुख त्योहार है।"],
+  ["Festivals & Culture","Festival marking the end of holy fasting month of Ramadan:",["Eid-ul-Fitr","Diwali","Holi","Christmas"],"Eid-ul-Fitr","ईद-उल-फितर रमजान के बाद मनाते हैं।"],
+  ["Festivals & Culture","Festival where sisters tie sacred thread on brothers' wrists:",["Raksha Bandhan","Bhai Dooj","Karwa Chauth","Teej"],"Raksha Bandhan","रक्षाबंधन भाई-बहन का त्योहार है।"],
+  ["Festivals & Culture","Effigies of 10-headed Ravana are burnt on:",["Dussehra (Vijayadashami)","Diwali","Holi","Janmashtami"],"Dussehra (Vijayadashami)","दशहरा पर रावण का पुतला जलाते हैं।"],
+  ["Festivals & Culture","Birthday of Lord Krishna is celebrated as:",["Janmashtami","Dussehra","Diwali","Shivratri"],"Janmashtami","श्रीकृष्ण का जन्मोत्सव जन्माष्टमी है।"],
+  ["Festivals & Culture","Festival celebrated by Parsis as their New Year:",["Navroz","Baisakhi","Lohri","Onam"],"Navroz","नवरोज पारसियों का नया साल है।"],
+  ["Festivals & Culture","Birthdays of the Sikh Gurus are celebrated as:",["Gurpurab","Baisakhi","Lohri","Diwali"],"Gurpurab","सिख गुरुओं के प्रकाश पर्व को गुरुपर्व कहते हैं।"],
+  ["Festivals & Culture","Traditional boat race (Vallam Kali) is held during which festival in Kerala?",["Onam","Pongal","Bihu","Diwali"],"Onam","ओणम पर नेहरू ट्रॉफी नौका दौड़ होती है।"],
+  ["Festivals & Culture","Which dance form belongs to Gujarat and is played with sticks during Navratri?",["Dandiya Raas & Garba","Kathak","Bhangra","Odissi"],"Dandiya Raas & Garba","डांडिया और गरबा गुजरात के लोकनृत्य हैं।"],
+  ["Days & Events","World Environment Day is observed every year on:",["5th June","22nd April","1st May","10th December"],"5th June","5 जून को विश्व पर्यावरण दिवस मनाते हैं।"],
+  ["Days & Events","Earth Day is celebrated globally on:",["22nd April","5th June","21st March","15th August"],"22nd April","22 अप्रैल को पृथ्वी दिवस मनाते हैं।"],
+  ["Days & Events","International Yoga Day is celebrated across the world on:",["21st June","1st January","15th August","2nd October"],"21st June","21 जून को योग दिवस मनाया जाता है।"],
+  ["Days & Events","National Science Day in India is celebrated on:",["28th February","15th August","5th September","14th November"],"28th February","28 फरवरी सी.वी. रमन के सम्मान में विज्ञान दिवस है।"],
+  ["Days & Events","Labour Day (May Day) is celebrated on:",["1st May","5th June","1st April","15th August"],"1st May","1 मई को मजदूर दिवस मनाते हैं।"],
+  ["Days & Events","How many days are there in a Leap Year?",["366","365","364","360"],"366","लीप वर्ष में 366 दिन होते हैं।"],
+  ["Days & Events","Leap year comes once in every how many years?",["4 years","2 years","5 years","10 years"],"4 years","हर 4 साल में एक बार लीप ईयर आता है।"],
+  ["Days & Events","National Sports Day in India on 29th August marks birthday of:",["Major Dhyan Chand","Milkha Singh","Sachin Tendulkar","Kapil Dev"],"Major Dhyan Chand","मेजर ध्यानचंद के जन्मदिन पर खेल दिवस मनाते हैं।"],
+  ["Days & Events","Martyrs' Day (Shaheed Diwas) in memory of Mahatma Gandhi is on:",["30th January","15th August","2nd October","26th January"],"30th January","30 जनवरी को शहीद दिवस मनाते हैं।"],
+  ["Days & Events","United Nations (UN) Day is celebrated on:",["24th October","5th June","1st May","15th August"],"24th October","24 अक्टूबर 1945 को संयुक्त राष्ट्र बना था।"],
+  ["General Awareness","Which animal cannot walk backwards?",["Kangaroo & Emu","Dog","Elephant","Cat"],"Kangaroo & Emu","कंगारू और एमू पीछे की ओर नहीं चल सकते।"],
+  ["General Awareness","Which bird's eye is bigger than its brain?",["Ostrich","Eagle","Owl","Crow"],"Ostrich","शुतुरमुर्ग की आंख उसके दिमाग से बड़ी होती है।"],
+  ["General Awareness","How many hearts does an Octopus have?",["3 hearts","1 heart","2 hearts","4 hearts"],"3 hearts","ऑक्टोपस के 3 दिल होते हैं।"],
+  ["General Awareness","Which color reflects sunlight the best and keeps us cool?",["White","Black","Red","Dark Blue"],"White","सफेद रंग धूप को परावर्तित करता है।"],
+  ["General Awareness","Which insect produces chirping sound at night by rubbing its wings?",["Cricket (झींगुर)","Butterfly","Mosquito","Ant"],"Cricket (झींगुर)","झींगुर पंख रगड़कर आवाज निकालता है।"],
+  ["General Awareness","Name of our galaxy in which Earth resides:",["Milky Way (आकाशगंगा)","Andromeda","Whirlpool","Orion"],"Milky Way (आकाशगंगा)","हमारी आकाशगंगा मिल्की वे है।"],
+  ["General Awareness","Which sense organ never stops growing throughout human life?",["Nose and Ears","Eyes","Tongue","Teeth"],"Nose and Ears","नाक और कान जीवन भर हल्के बढ़ते रहते हैं।"],
+  ["General Awareness","A healthy human heart beats about how many times per minute at rest?",["72 times","30 times","120 times","200 times"],"72 times","सामान्य हृदय 1 मिनट में लगभग 72 बार धड़कता है।"],
+  ["General Awareness","Which gas filled in party balloons makes them float in air?",["Helium","Oxygen","Air","Carbon dioxide"],"Helium","हीलियम हवा से हल्की होती है, इसलिए गुब्बारा उड़ता है।"],
+  ["General Awareness","Blood in our body is red because of a pigment called:",["Hemoglobin","Chlorophyll","Melanin","Calcium"],"Hemoglobin","हीमोग्लोबिन के कारण खून लाल दिखता है।"],
+  ["Community Helpers","Who designs maps, plans and layouts for new buildings?",["Architect","Mason","Carpenter","Painter"],"Architect","वास्तुकार (Architect) इमारतों का नक्शा बनाता है।"],
+  ["Community Helpers","Who flies rocket and spaceship into outer space?",["Astronaut","Pilot","Driver","Sailor"],"Astronaut","अंतरिक्ष यात्री = Astronaut."],
+  ["Community Helpers","Who repairs leaking water pipes and taps?",["Plumber","Electrician","Carpenter","Mechanic"],"Plumber","नल-पाइप ठीक करने वाले को Plumber कहते हैं।"],
+  ["Community Helpers","Who repairs broken electric wires, lights and fans?",["Electrician","Plumber","Cobbler","Barber"],"Electrician","बिजली का काम Electrician करता है।"],
+  ["Community Helpers","Who takes care of flowers and plants in a public garden?",["Gardener (माली)","Farmer","Doctor","Tailor"],"Gardener (माली)","माली बगीचे की देखभाल करता है।"],
+  ["Community Helpers","Who operates and drives a passenger train?",["Loco Pilot (Train Driver)","Conductor","Station Master","Porter"],"Loco Pilot (Train Driver)","ट्रेन चालक को लोको पायलट कहते हैं।"],
+  ["Community Helpers","Who serves food and drinks to passengers on an aeroplane?",["Flight Attendant / Cabin Crew","Pilot","Mechanic","Security"],"Flight Attendant / Cabin Crew","विमान में खाना-पानी केबिन क्रू परोसता है।"],
+  ["Community Helpers","Who cooks delicious food in a big restaurant hotel?",["Chef","Waiter","Manager","Cashier"],"Chef","होटल के मुख्य रसोइए को Chef कहते हैं।"],
+  ["Community Helpers","Who delivers mail, letters and parcels to our doorstep?",["Postman / Courier delivery person","Policeman","Driver","Teacher"],"Postman / Courier delivery person","डाकिया डाक घर पहुंचाता है।"],
+  ["Community Helpers","Who sells medicines prescribed by doctors in a pharmacy?",["Chemist / Pharmacist","Doctor","Nurse","Compounder"],"Chemist / Pharmacist","दवा बेचने वाले को Chemist कहते हैं।"],
+  ["Safety & Emergency","Dial which number in India to report child abuse or help a child in distress?",["1098 (Childline)","100","101","102"],"1098 (Childline)","1098 बच्चों की सहायता का राष्ट्रीय हेल्पलाइन नंबर है।"],
+  ["Safety & Emergency","Women helpline emergency number in India:",["1091","100","101","108"],"1091","महिला हेल्पलाइन 1091 है।"],
+  ["Safety & Emergency","Signboard showing red border circle with a horn and cross means:",["No Honking","Blow Horn","Drive fast","Parking"],"No Honking","हॉर्न न बजाएं (साइलेंट ज़ोन)."],
+  ["Safety & Emergency","Signboard showing an adult holding a child's hand walking means:",["School Ahead","Playground","Hospital","Bus Stop"],"School Ahead","आगे स्कूल है, वाहन धीमा चलाएं।"],
+  ["Safety & Emergency","Signboard with letter 'P' crossed out with red line means:",["No Parking","Parking allowed","Police station","Petrol pump"],"No Parking","यहाँ वाहन खड़ा करना मना है।"],
+  ["Safety & Emergency","Always get in or out of a bus:",["Only when it has stopped completely","While moving slowly","From driver window","By jumping"],"Only when it has stopped completely","बस रुकने पर ही चढ़ें या उतरें।"],
+  ["Safety & Emergency","Before crossing any road, we must look:",["Right, Left, then Right again","Only forward","Up at sky","Only at our phone"],"Right, Left, then Right again","दाएं, बाएं और फिर दाएं देखकर सड़क पार करें।"],
+  ["Safety & Emergency","If your clothes accidentally catch fire, follow rule:",["Stop, Drop and Roll","Run fast in wind","Jump on bed","Hide in room"],"Stop, Drop and Roll","रुको, जमीन पर लेटो और लुढ़को।"],
+  ["Safety & Emergency","Never accept eatables, gifts or rides from:",["Strangers (अजनबी)","Parents","Teachers","Grandparents"],"Strangers (अजनबी)","अजनबियों से कोई चीज न लें।"],
+  ["Safety & Emergency","In case of an earthquake, stay calm and take cover:",["Under a sturdy desk or table","Near glass windows","In an elevator","Under heavy chandeliers"],"Under a sturdy desk or table","मजबूत मेज के नीचे सिर ढककर बैठें।"]
+];
+
+const Q_REASONING = [
+  ["Patterns","Complete number pattern: 7, 14, 21, 28, ___",["32","35","36","42"],"35","7 का पहाड़ा (+7): 28 + 7 = 35."],
+  ["Patterns","Complete: 100, 95, 90, 85, ___",["75","80","82","84"],"80","-5 का अंतर: 85 - 5 = 80."],
+  ["Patterns","Letter series: B, D, F, H, ___",["I","J","K","L"],"J","+2 अक्षर: H (+2) = J."],
+  ["Patterns","Complete: 10Z, 20Y, 30X, ___",["40W","40V","50W","35Z"],"40W","संख्या +10 और वर्णमाला उल्टी: 40W."],
+  ["Patterns","Next term: 1, 3, 5, 7, 9, ___",["10","11","12","13"],"11","लगातार विषम संख्याएँ: 9 के बाद 11."],
+  ["Patterns","Next term: 50, 100, 150, 200, ___",["220","250","300","210"],"250","+50 का अंतर: 200 + 50 = 250."],
+  ["Patterns","Alphabet pattern: AZ, BY, CX, ___",["DW","DV","EV","DX"],"DW","पहला आगे, दूसरा पीछे: D और W → DW."],
+  ["Patterns","Next number: 2, 6, 10, 14, ___",["16","18","20","22"],"18","+4 का अंतर: 14 + 4 = 18."],
+  ["Patterns","Complete: A1, B2, C3, D4, ___",["E5","E6","F5","D5"],"E5","अक्षर और संख्या क्रम: E5."],
+  ["Patterns","Next in pattern: 81, 72, 63, 54, ___",["42","45","48","50"],"45","9 का पहाड़ा घटते क्रम में: 54 - 9 = 45."],
+  ["Patterns","Shape pattern: Triangle (3 sides), Square (4 sides), Pentagon (5 sides), ___",["Hexagon (6 sides)","Circle","Oval","Star"],"Hexagon (6 sides)","भुजाएँ 1 बढ़ रही हैं: 6 भुजाओं वाला षट्भुज."],
+  ["Patterns","Arrows: ↑↑, ↓↓, ↑↑, ___",["↓↓","↑↑","→→","←←"],"↓↓","एकांतर क्रम: अगला ↓↓."],
+  ["Patterns","Next term: 12, 15, 18, 21, ___",["23","24","25","26"],"24","+3 का अंतर: 21 + 3 = 24."],
+  ["Patterns","Complete: 300, 275, 250, 225, ___",["200","210","215","190"],"200","-25 का अंतर: 225 - 25 = 200."],
+  ["Patterns","Alphabet series: Z, X, V, T, ___",["R","S","Q","P"],"R","उल्टे क्रम में 2-2 छोड़ना: T (-2) = R."],
+  ["Odd One Out","Identify the odd one: Parrot, Eagle, Crow, Bat",["Parrot","Eagle","Crow","Bat"],"Bat","चमगादड़ स्तनधारी (Mammal) है, बाकी पक्षी हैं।"],
+  ["Odd One Out","Find the odd one: Onion, Ginger, Potato, Tomato",["Onion","Ginger","Potato","Tomato"],"Tomato","टमाटर जमीन के ऊपर उगता है, बाकी जमीन के नीचे।"],
+  ["Odd One Out","Find the odd one: Spoon, Fork, Knife, Pillow",["Spoon","Fork","Knife","Pillow"],"Pillow","तकिया बिस्तर का हिस्सा है, बाकी कटलरी हैं।"],
+  ["Odd One Out","Odd number: 24, 36, 49, 64",["24","36","49","64"],"49","49 विषम संख्या है, बाकी सभी सम संख्याएँ हैं।"],
+  ["Odd One Out","Find the odd one: Red, Blue, Yellow, Heavy",["Red","Blue","Yellow","Heavy"],"Heavy","Heavy वजन बताता है, बाकी रंग हैं।"],
+  ["Odd One Out","Find the odd one: Snake, Earthworm, Snail, Horse",["Snake","Earthworm","Snail","Horse"],"Horse","घोड़े के पैर होते हैं, बाकी रेंगने वाले जीव हैं।"],
+  ["Odd One Out","Find the odd one: March, May, July, November",["March","May","July","November"],"November","नवंबर 30 दिन का होता है, बाकी 31 दिन के।"],
+  ["Odd One Out","Find the odd letter group: ABC, DEF, GHI, JKL, MNO, PQR, XYZ, TUV",["ABC","XYZ","DEF","GHI"],"XYZ","बाकी 3-3 के क्रमिक समूह हैं, XYZ अंतिम है।"],
+  ["Odd One Out","Find the odd one: Shirt, Trousers, Frock, Towel",["Shirt","Trousers","Frock","Towel"],"Towel","तौलिया सुखाने के लिए है, बाकी पहनने के कपड़े।"],
+  ["Odd One Out","Find the odd one: Sun, Bulb, Candle, Mirror",["Sun","Bulb","Candle","Mirror"],"Mirror","दर्पण प्रकाश नहीं देता, परावर्तित करता है।"],
+  ["Analogy","Sun : Day :: Moon : _____",["Night","Noon","Light","Morning"],"Night","सूरज दिन में, चाँद रात में।"],
+  ["Analogy","Fish : Water :: Bird : _____",["Air / Sky","Nest","Tree","Cage"],"Air / Sky","मछली पानी में तैरती है, पक्षी हवा में उड़ते हैं।"],
+  ["Analogy","Kangaroo : Joey :: Sheep : _____",["Lamb","Calf","Cub","Chick"],"Lamb","कंगारू का बच्चा Joey, भेड़ का Lamb."],
+  ["Analogy","Glove : Hand :: Sock : _____",["Foot","Leg","Shoe","Head"],"Foot","दस्ताना हाथ में, मोजा पैर में।"],
+  ["Analogy","Ear : Hear :: Nose : _____",["Smell","Taste","See","Touch"],"Smell","कान से सुनते हैं, नाक से सूंघते हैं।"],
+  ["Analogy","3 : 9 :: 4 : _____ (Multiplied by itself)",["12","16","20","24"],"16","3 × 3 = 9; 4 × 4 = 16."],
+  ["Analogy","Winter : Cold :: Summer : _____",["Hot","Rainy","Snow","Breeze"],"Hot","सर्दियों में ठंड, गर्मियों में गर्मी।"],
+  ["Analogy","Tailor : Scissors :: Carpenter : _____",["Saw (आरी)","Pen","Cloth","Needle"],"Saw (आरी)","दर्जी कैंची चलाता है, बढ़ई आरी चलाता है।"],
+  ["Analogy","Bee : Hive :: Cow : _____",["Shed","Den","Burrow","Kennel"],"Shed","मधुमक्खी छत्ते में, गाय शेड में।"],
+  ["Analogy","Square : 4 sides :: Triangle : _____ sides",["2","3","5","6"],"3","त्रिभुज की 3 भुजाएँ होती हैं।"],
+  ["Analogy","Book : Pages :: Clock : _____",["Hands / Numbers","Battery","Wall","Alarms"],"Hands / Numbers","किताब में पन्ने, घड़ी में सुइयाँ होती हैं।"],
+  ["Analogy","Puppy : Dog :: Kitten : _____",["Cat","Cow","Lion","Tiger"],"Cat","Puppy कुत्ते का, Kitten बिल्ली का बच्चा।"],
+  ["Analogy","Rain : Umbrella :: Sun : _____",["Sunglasses / Cap","Boots","Sweater","Gloves"],"Sunglasses / Cap","धूप से बचने के लिए चश्मा या कैप।"],
+  ["Analogy","Water : Thirst :: Food : _____",["Hunger","Sleep","Tired","Play"],"Hunger","पानी प्यास बुझाता है, भोजन भूख मिटाता है।"],
+  ["Analogy","Train : Track :: Car : _____",["Road","Water","Sky","Air"],"Road","ट्रेन पटरी पर, कार सड़क पर।"],
+  ["Alphabet & Ranking","Which English letter comes 5th from the start?",["C","D","E","F"],"E","1-A, 2-B, 3-C, 4-D, 5-E."],
+  ["Alphabet & Ranking","Which letter comes 3rd from the end (Z is 1st)?",["X","Y","W","V"],"X","Z (1st), Y (2nd), X (3rd from end)."],
+  ["Alphabet & Ranking","In 'MANGO', which letter is in the middle?",["A","N","G","O"],"N","M-A-N-G-O में बीच का अक्षर 'N' है।"],
+  ["Alphabet & Ranking","In a queue of 6 people, Ravi is standing 2nd. People behind him?",["3","4","5","2"],"4","6 - 2 = 4 लोग पीछे खड़े हैं।"],
+  ["Alphabet & Ranking","If A=1, B=2, C=3, what is the value of DOG (4+15+7)?",["24","26","28","30"],"26","D(4) + O(15) + G(7) = 26."],
+  ["Alphabet & Ranking","First letter of English alphabet that is a Vowel:",["A","E","I","O"],"A","वर्णमाला का पहला अक्षर 'A' स्वर है।"],
+  ["Alphabet & Ranking","How many vowels are in the word 'EDUCATION'?",["3","4","5","6"],"5","E, D, U, C, A, T, I, O, N में 5 स्वर (A, E, I, O, U) हैं।"],
+  ["Alphabet & Ranking","Which word comes FIRST in alphabetical dictionary order?",["Apple","Banana","Cat","Dog"],"Apple","'A' से शुरू होने वाला शब्द सबसे पहले आएगा।"],
+  ["Alphabet & Ranking","Which word comes LAST in a dictionary: Pen, Pencil, Paper, Pot?",["Pot","Pen","Pencil","Paper"],"Pot","P-o, P-e और P-a के बाद आता है।"],
+  ["Alphabet & Ranking","Re-arrange letters 'T-A-C' to name a pet animal:",["CAT","ACT","TAC","TCA"],"CAT","सही शब्द बिल्ली = CAT."],
+  ["Spatial Sense","A bird is flying OVER the tree. The tree is ______ the bird.",["under / below","above","on","inside"],"under / below","पेड़ पक्षी के नीचे है।"],
+  ["Spatial Sense","Inside of a box is full. Where can extra balls be kept?",["Outside","Inside","Between","Through"],"Outside","अतिरिक्त गेंदें बाहर रखी जाएंगी।"],
+  ["Spatial Sense","Top of a mountain is called its peak. Bottom of mountain is its:",["Base / Foot","Peak","Side","Slope"],"Base / Foot","निचले भाग को तलहटी (Base/Foot) कहते हैं।"],
+  ["Spatial Sense","If you face East at sunrise, which direction is behind your back?",["West","North","South","East"],"West","पूरब की तरफ मुंह करने पर पीठ पश्चिम (West) में होगी।"],
+  ["Spatial Sense","If you face North, which direction is to your right hand?",["East","West","South","North"],"East","उत्तर की ओर मुंह करने पर दायां हाथ पूरब (East) में होगा।"],
+  ["Coding-Decoding","If BAT = 2-1-20, what is CAT?",["3-1-20","1-2-3","3-2-20","4-1-20"],"3-1-20","C=3, A=1, T=20 → 3-1-20."],
+  ["Coding-Decoding","If BLUE is called RED, and RED is called WHITE, what is blood's color?",["White","Red","Blue","Black"],"White","खून लाल होता है, और लाल को यहाँ White कहा गया है।"],
+  ["Coding-Decoding","If FISH is called BIRD, and BIRD is called TREE, what flies in sky?",["Tree","Fish","Bird","Sky"],"Tree","पक्षी उड़ते हैं, और पक्षी को 'Tree' कहा गया है।"],
+  ["Coding-Decoding","In a code, UP means DOWN, and DOWN means IN. Opposite of OUT is IN, which is called:",["Down","Up","Out","Between"],"Down","IN को यहाँ Down कहा गया है।"],
+  ["Coding-Decoding","If 1 means YES, and 0 means NO, then 1+0 means:",["YES and NO","YES","NO","None"],"YES and NO","1 = YES, 0 = NO."],
+  ["Shapes & Geometry","A cylinder has how many circular flat faces?",["1","2","3","0"],"2","बेलन के ऊपर और नीचे 2 गोल चपटे फलक होते हैं।"],
+  ["Shapes & Geometry","A cone has how many sharp corners (vertex)?",["1","2","3","0"],"1","शंकु की चोटी पर केवल 1 कोना होता है।"],
+  ["Shapes & Geometry","How many right angles (L-shapes) are inside a rectangle?",["2","3","4","5"],"4","आयत के चारों कोने 90° के होते हैं।"],
+  ["Shapes & Geometry","A round coin can ONLY:",["Roll and slide","Fly","Break easily","Bounce"],"Roll and slide","सिक्का लुढ़क (roll) और फिसल (slide) दोनों सकता है।"],
+  ["Shapes & Geometry","Which figure has 3 corners and 3 straight sides?",["Triangle","Square","Circle","Pentagon"],"Triangle","त्रिभुज की 3 भुजाएँ और 3 कोने होते हैं।"],
+  ["Shapes & Geometry","How many pairs of parallel sides are in a square?",["1 pair","2 pairs","3 pairs","4 pairs"],"2 pairs","आमने-सामने की दो जोड़ियां समानांतर होती हैं।"],
+  ["Shapes & Geometry","Cut an apple horizontally in half. Flat face looks like a:",["Circle","Triangle","Square","Rectangle"],"Circle","कटे हुए सेब की समतल सतह गोल वृत्त जैसी दिखती है।"],
+  ["Shapes & Geometry","A dice has numbers from 1 to 6. How many faces have numbers?",["4","6","8","12"],"6","पासे की सभी 6 सतहों पर संख्याएं होती हैं।"],
+  ["Shapes & Geometry","A shape bounded by 5 straight lines is a:",["Pentagon","Hexagon","Square","Triangle"],"Pentagon","5 भुजाओं वाली आकृति पंचभुज (Pentagon) है।"],
+  ["Shapes & Geometry","Which 2D shape can be folded to make a Cube?",["Net of 6 squares","4 circles","3 triangles","1 rectangle"],"Net of 6 squares","6 वर्गों का जाल घन बनाता है।"],
+  ["Measurement Logic","Balancing beam: 1 Watermelon balances 4 Mangoes. 2 Watermelons balance:",["6 Mangoes","8 Mangoes","10 Mangoes","12 Mangoes"],"8 Mangoes","2 × 4 = 8 आम।"],
+  ["Measurement Logic","Rope A is 10 m, Rope B is 15 m. Tied together with no knot loss. Total?",["20 m","25 m","30 m","35 m"],"25 m","10 + 15 = 25 m."],
+  ["Measurement Logic","Jar holds 6 cups of water. Filled with 4 cups. More needed to fill?",["1 cup","2 cups","3 cups","4 cups"],"2 cups","6 - 4 = 2 cups."],
+  ["Measurement Logic","Heavier side of a seesaw goes:",["Downwards","Upwards","Stays level","Flies off"],"Downwards","भारी पलड़ा नीचे की तरफ झुकता है।"],
+  ["Measurement Logic","If an apple is lighter than a pineapple, which is heavier?",["Pineapple","Apple","Both equal","Cannot say"],"Pineapple","अनानास भारी है।"],
+  ["Grouping & Sets","Which object belongs to the 'Bathroom set': Soap, Spoon, Pen, Toy car?",["Soap","Spoon","Pen","Toy car"],"Soap","साबुन बाथरूम की वस्तु है।"],
+  ["Grouping & Sets","Group: Cow, Goat, Horse, Sheep. Common feature:",["They are all four-legged herbivores","They all fly","They all live in water","They eat meat"],"They are all four-legged herbivores","ये सभी चार पैरों वाले शाकाहारी जीव हैं।"],
+  ["Grouping & Sets","Which does NOT belong to bedroom: Bed, Pillow, Blanket, Gas stove?",["Gas stove","Bed","Pillow","Blanket"],"Gas stove","गैस चूल्हा रसोईघर में होता है।"],
+  ["Grouping & Sets","Group of 12 items (like 12 bananas) is called a:",["Dozen (दर्जन)","Pair","Score","Bundle"],"Dozen (दर्जन)","12 वस्तुओं का समूह 1 दर्जन कहलाता है।"],
+  ["Grouping & Sets","A pair of shoes means how many individual shoes?",["1","2","3","4"],"2","एक जोड़ी (pair) में 2 जूते होते हैं।"],
+  ["Time Logic","If today is Wednesday, what day was the day BEFORE yesterday?",["Monday","Tuesday","Thursday","Sunday"],"Monday","आज बुधवार है, कल मंगलवार था, परसों सोमवार था।"],
+  ["Time Logic","Clock shows 6:30. The hour hand is between:",["6 and 7","5 and 6","7 and 8","12 and 1"],"6 and 7","6:30 पर घंटे की सुई 6 और 7 के ठीक बीच में होती है।"],
+  ["Time Logic","How many days are in the weekend (Saturday and Sunday)?",["1","2","3","4"],"2","सप्ताहांत में 2 दिन होते हैं।"],
+  ["Time Logic","If you wake up at 7:00 AM and sleep at 9:00 PM, you stay awake for:",["12 hours","14 hours","16 hours","10 hours"],"14 hours","7 AM से 7 PM = 12 घंटे + 2 घंटे = 14 घंटे।"],
+  ["Time Logic","Month that has 28 or 29 days is:",["January","February","March","April"],"February","फरवरी में 28 या 29 दिन होते हैं।"],
+  ["Deductive Logic","All roses are flowers. All flowers smell good. Do roses smell good?",["Yes","No","Never","Cannot say"],"Yes","हाँ, सभी गुलाब फूल हैं और अच्छी खुशबू देते हैं।"],
+  ["Deductive Logic","Tina is taller than Maya. Maya is taller than Sita. Who is the tallest?",["Tina","Maya","Sita","Both equal"],"Tina","टीना सबसे लंबी है (Tina > Maya > Sita)."],
+  ["Deductive Logic","A red box is inside a green box. The green box is inside a blue box. Which is outermost?",["Blue box","Green box","Red box","All equal"],"Blue box","नीला बक्सा सबसे बाहर है।"],
+  ["Deductive Logic","A basket has 5 mangoes. 5 children each take 1 mango, yet 1 mango remains in the basket. How?",["The 5th child took the basket with the mango","One mango disappeared","Math is wrong","There were 6 mangoes"],"The 5th child took the basket with the mango","पाँचवें बच्चे ने टोकरी सहित आम ले लिया।"],
+  ["Deductive Logic","A father has 4 daughters. Each daughter has 1 brother. Total children?",["5 children (4 girls + 1 boy)","8 children","4 children","10 children"],"5 children (4 girls + 1 boy)","चारों बहनों का वही 1 भाई है: कुल 5 बच्चे।"],
+  ["Mirror & Symmetry","Which English letter looks EXACTLY the same in a mirror?",["A","B","C","D"],"A","'A' दोनों तरफ से सममित (Symmetric) है।"],
+  ["Mirror & Symmetry","Which capital letter looks the same in a mirror?",["M","E","F","G"],"M","'M' शीशे में उलटने पर भी M ही दिखता है।"],
+  ["Mirror & Symmetry","Which digit looks the same upside down?",["8","2","4","7"],"8","'8' को उल्टा करने पर भी 8 ही दिखता है।"],
+  ["Mirror & Symmetry","Can a circle be divided into two symmetrical halves in many ways?",["Yes, infinite ways through center","No, only 1 way","Only 2 ways","Never"],"Yes, infinite ways through center","केंद्र से गुजरने वाली किसी भी रेखा से 2 बराबर भाग होते हैं।"],
+  ["Mirror & Symmetry","Which word reads the same forward and backward (Palindrome)?",["MADAM","APPLE","WATER","CHAIR"],"MADAM","M-A-D-A-M दोनों तरफ से समान है।"],
+  ["Problem Solving","A farmer has 10 sheep. All but 3 ran away. How many are left with him?",["3","7","10","0"],"3","'All but 3' का अर्थ है 3 को छोड़कर सब भाग गए, अतः 3 बचे।"],
+  ["Problem Solving","You have 2 hands and 10 fingers. How many fingers do 2 people have together?",["10","15","20","40"],"20","2 लोग × 10 उंगलियां = 20 उंगलियां।"],
+  ["Problem Solving","A frog in a 10-foot well climbs up 3 feet daily and slips back 2 feet. Net climb per day?",["1 foot","2 feet","3 feet","5 feet"],"1 foot","3 - 2 = 1 फुट प्रति दिन।"],
+  ["Problem Solving","How many cuts are needed to divide a long ribbon into 4 equal pieces?",["2 cuts","3 cuts","4 cuts","5 cuts"],"3 cuts","3 बार काटने पर 4 टुकड़े बनते हैं।"],
+  ["Problem Solving","If you turn a square clockwise by a full turn (360 degrees), how does it look?",["Same as original","Upside down","Triangle","Rectangle"],"Same as original","पूरा एक चक्कर घूमने पर वह वापस मूल जैसा दिखता है।"]
+];
+
+const masterData = {
+  math: Q_MATH,
+  science: Q_SCIENCE,
+  english: Q_ENGLISH,
+  gk: Q_GK,
+  reasoning: Q_REASONING
+};
+
+const subjectDisplayNames = {
+  math: "📐 Mathematics",
+  science: "🔬 Science",
+  english: "📖 English",
+  gk: "🌍 General Knowledge",
+  reasoning: "🧠 Logical Reasoning"
+};
+
+let currentSubject = 'math';
+let currentQuestionIndex = 0;
+let userState = {};
+
+function initStorage() {
+  const saved = localStorage.getItem('class2_olympiad_500_fresh_state');
+  if (saved) {
+    try { userState = JSON.parse(saved); } catch(e) { userState = {}; }
+  }
+  Object.keys(masterData).forEach(sub => {
+    if (!userState[sub] || userState[sub].length !== 100) {
+      userState[sub] = new Array(100).fill(null);
+    }
+  });
+}
+
+function saveState() {
+  localStorage.setItem('class2_olympiad_500_fresh_state', JSON.stringify(userState));
+}
+
+function switchSubject(sub) {
+  currentSubject = sub;
+  currentQuestionIndex = 0;
+  
+  document.querySelectorAll('.sub-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-sub') === sub);
+  });
+  
+  document.getElementById('subjectName').innerText = subjectDisplayNames[sub];
+  loadQuestion();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  const currentList = masterData[currentSubject];
+  const userAnswers = userState[currentSubject];
+
+  currentList.forEach((item, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-btn' + (idx === currentQuestionIndex ? ' active' : '');
+    const ans = userAnswers[idx];
+    if (ans) {
+      btn.classList.add(ans === item[3] ? 'correct' : 'wrong');
+    }
+    btn.innerText = idx + 1;
+    btn.onclick = () => { currentQuestionIndex = idx; loadQuestion(); };
+    grid.appendChild(btn);
+  });
+}
+
+function loadQuestion() {
+  renderGrid();
+  const qData = masterData[currentSubject][currentQuestionIndex];
+  const answered = userState[currentSubject][currentQuestionIndex];
+
+  document.getElementById('topicBadge').innerText = "📌 " + qData[0];
+  document.getElementById('questionText').innerText = `${currentQuestionIndex + 1}. ${qData[1]}`;
+  
+  document.getElementById('prevBtn').disabled = (currentQuestionIndex === 0);
+  document.getElementById('nextBtn').disabled = (currentQuestionIndex === masterData[currentSubject].length - 1);
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+
+  qData[2].forEach(option => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerText = option;
+    btn.onclick = () => selectAnswer(option);
+
+    if (answered) {
+      btn.disabled = true;
+      if (option === qData[3]) btn.classList.add('correct-opt');
+      if (option === answered && answered !== qData[3]) btn.classList.add('wrong-opt');
+    }
+    container.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  if (answered) {
+    fb.className = 'feedback-box show';
+    const isRight = (answered === qData[3]);
+    fb.style.background = isRight ? '#dcfce7' : '#fee2e2';
+    fb.style.color = isRight ? '#15803d' : '#b91c1c';
+    fb.innerHTML = (isRight ? '✔ <b>शाबाश! सही उत्तर।</b> ' : `✖ <b>गलत उत्तर!</b> (सही उत्तर: <b>${qData[3]}</b>)<br>`) + `<b>हल / व्याख्या:</b> ${qData[4]}`;
+  } else {
+    fb.className = 'feedback-box';
+  }
+
+  updateMetrics();
+}
+
+function selectAnswer(selected) {
+  if (userState[currentSubject][currentQuestionIndex]) return;
+  userState[currentSubject][currentQuestionIndex] = selected;
+  saveState();
+  loadQuestion();
+}
+
+function updateMetrics() {
+  const currentAnswers = userState[currentSubject];
+  const currentList = masterData[currentSubject];
+  
+  let currentScore = 0;
+  let currentAttempted = 0;
+  currentAnswers.forEach((ans, i) => {
+    if (ans) currentAttempted++;
+    if (ans === currentList[i][3]) currentScore++;
+  });
+
+  const scoreText = `Score: ${currentScore} / 100 (हल: ${currentAttempted}/100)`;
+  document.getElementById('subjectScoreText').innerText = scoreText;
+  document.getElementById('footerScore').innerText = `Score: ${currentScore} / 100`;
+
+  let totalQuestions = 500;
+  let totalAttempted = 0;
+  Object.keys(masterData).forEach(sub => {
+    userState[sub].forEach(a => { if (a) totalAttempted++; });
+  });
+
+  const percent = Math.round((totalAttempted / totalQuestions) * 100);
+  document.getElementById('overallPercentage').innerText = `${percent}% (${totalAttempted}/500)`;
+  document.getElementById('overallBar').style.width = `${percent}%`;
+}
+
+function nextQ() {
+  if (currentQuestionIndex < masterData[currentSubject].length - 1) {
+    currentQuestionIndex++;
+    loadQuestion();
+  }
+}
+
+function prevQ() {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    loadQuestion();
+  }
+}
+
+function resetCurrentSubject() {
+  if (confirm(`क्या आप ${subjectDisplayNames[currentSubject]} के सभी 100 उत्तर मिटाकर रीसेट करना चाहते हैं?`)) {
+    userState[currentSubject] = new Array(100).fill(null);
+    currentQuestionIndex = 0;
+    saveState();
+    loadQuestion();
+  }
+}
+
+function resetAllData() {
+  if (confirm("चेतावनी: क्या आप सभी 5 विषयों का डेटा (कुल 500 प्रश्न) मिटाकर शून्य से शुरू करना चाहते हैं?")) {
+    localStorage.removeItem('class2_olympiad_500_fresh_state');
+    initStorage();
+    currentQuestionIndex = 0;
+    loadQuestion();
+  }
+}
+
+initStorage();
+switchSubject('math');
+</script>
+</body>
+</html>
